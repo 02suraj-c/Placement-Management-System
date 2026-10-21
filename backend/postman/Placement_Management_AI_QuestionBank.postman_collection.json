@@ -1,0 +1,492 @@
+{
+	"info": {
+		"_postman_id": "a9d7b420-7f28-4e31-8e9a-76f5b9d3e810",
+		"name": "Placement Management - AI & Question Bank API",
+		"description": "Comprehensive Postman collection for testing AI services (Resume ATS Analyzer, Interview Generator, Preparation Planner) and Question Bank CRUD with Role-Based Access Control (RBAC).",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "studentToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "facultyToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "tpoToken",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "questionId",
+			"value": "1",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "1. Authentication (Stubs / Login)",
+			"item": [
+				{
+					"name": "Login - Student",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('studentToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"student@college.edu\",\n  \"password\": \"Student@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login - Faculty",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('facultyToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"faculty@college.edu\",\n  \"password\": \"Faculty@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				},
+				{
+					"name": "Login - TPO",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 200) {",
+									"    var jsonData = pm.response.json();",
+									"    if (jsonData.token) {",
+									"        pm.collectionVariables.set('tpoToken', jsonData.token);",
+									"    }",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"tpo@college.edu\",\n  \"password\": \"Tpo@123\"\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/auth/login",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "2. Question Bank",
+			"item": [
+				{
+					"name": "Get All Questions (Paginated & Filtered)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{studentToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/questions?page=0&size=10&company=Google&topic=Java&difficulty=MEDIUM",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								},
+								{
+									"key": "company",
+									"value": "Google"
+								},
+								{
+									"key": "topic",
+									"value": "Java"
+								},
+								{
+									"key": "difficulty",
+									"value": "MEDIUM"
+								}
+							]
+						}
+					}
+				},
+				{
+					"name": "Get Question By ID",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{studentToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questions",
+								"{{questionId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Create Question (Faculty / TPO)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"if (pm.response.code === 201) {",
+									"    var data = pm.response.json();",
+									"    pm.collectionVariables.set('questionId', data.id);",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{facultyToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"questionText\": \"Explain the internal working of HashMap in Java with collision handling.\",\n  \"answer\": \"HashMap uses an array of Node buckets. Hash collisions are resolved using linked lists, and converted to Red-Black Trees when treeify threshold (8) is exceeded.\",\n  \"company\": \"Amazon\",\n  \"topic\": \"Java, Collections\",\n  \"targetRole\": \"Software Development Engineer\",\n  \"difficulty\": \"MEDIUM\",\n  \"questionType\": \"TECHNICAL\",\n  \"tags\": \"java,hashmap,collections,dsa\",\n  \"yearAsked\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questions",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questions"
+							]
+						}
+					}
+				},
+				{
+					"name": "Update Question (TPO / Faculty)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tpoToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"questionText\": \"Explain the internal working of ConcurrentHashMap vs HashMap in Java.\",\n  \"answer\": \"ConcurrentHashMap uses lock striping with CAS and synchronized blocks on node buckets for concurrent safety without blocking entire map.\",\n  \"company\": \"Amazon\",\n  \"topic\": \"Java Concurrency\",\n  \"targetRole\": \"SDE-2\",\n  \"difficulty\": \"HARD\",\n  \"questionType\": \"TECHNICAL\",\n  \"tags\": \"java,concurrency,multithreading\",\n  \"yearAsked\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questions",
+								"{{questionId}}"
+							]
+						}
+					}
+				},
+				{
+					"name": "Delete Question (TPO / Deputy TPO)",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tpoToken}}"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/api/questions/{{questionId}}",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"questions",
+								"{{questionId}}"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "3. AI Resume Analyzer",
+			"item": [
+				{
+					"name": "Analyze Resume (PDF / DOCX)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{studentToken}}"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file",
+									"src": ""
+								},
+								{
+									"key": "request",
+									"value": "{\n  \"targetRole\": \"Software Engineer\",\n  \"targetCompany\": \"Google\",\n  \"jobDescriptionKeywords\": \"Java, Spring Boot, Microservices, Kubernetes, Docker, REST API\"\n}",
+									"type": "text",
+									"contentType": "application/json"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ai/resume/analyze",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ai",
+								"resume",
+								"analyze"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "4. AI Interview Generator",
+			"item": [
+				{
+					"name": "Generate Interview Questions (All Roles, No Save)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{studentToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"targetRole\": \"Backend Developer\",\n  \"targetCompany\": \"Microsoft\",\n  \"skills\": [\"Java\", \"Spring Boot\", \"System Design\"],\n  \"difficulty\": \"MEDIUM\",\n  \"questionType\": \"TECHNICAL\",\n  \"count\": 5,\n  \"year\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ai/interview/generate",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ai",
+								"interview",
+								"generate"
+							]
+						}
+					}
+				},
+				{
+					"name": "Generate & Save Questions to Bank (Faculty / TPO)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{tpoToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"targetRole\": \"Full Stack Developer\",\n  \"targetCompany\": \"Accenture\",\n  \"skills\": [\"Java\", \"React\", \"PostgreSQL\"],\n  \"difficulty\": \"EASY\",\n  \"questionType\": \"TECHNICAL\",\n  \"count\": 3,\n  \"year\": 2024\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ai/interview/generate-and-save",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ai",
+								"interview",
+								"generate-and-save"
+							]
+						}
+					}
+				}
+			]
+		},
+		{
+			"name": "5. AI Preparation Planner",
+			"item": [
+				{
+					"name": "Generate Preparation Plan (Role / Drive Date / Gaps)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{studentToken}}"
+							},
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"targetRole\": \"Software Engineer\",\n  \"targetCompany\": \"Amazon\",\n  \"driveDate\": \"2026-12-15\",\n  \"skillGaps\": [\"Dynamic Programming\", \"System Design\", \"Kafka\"],\n  \"existingSkills\": [\"Java\", \"Spring Boot\", \"MySQL\"],\n  \"dailyStudyHours\": 4\n}"
+						},
+						"url": {
+							"raw": "{{baseUrl}}/api/ai/preparation/plan",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"api",
+								"ai",
+								"preparation",
+								"plan"
+							]
+						}
+					}
+				}
+			]
+		}
+	]
+}

@@ -26,10 +26,11 @@ cp .env.example .env
 
 | Variable | Description | Example Value |
 |---|---|---|
-| `PORT` | HTTP server port | `8080` |
-| `DB_URL` | JDBC Connection String | `jdbc:mysql://localhost:3306/placement_db?useSSL=false` |
-| `DB_USERNAME` | Database username | `root` |
-| `DB_PASSWORD` | Database password | `root_password` |
+| `PORT` | HTTP server port (Default: `8080`, mapped `8080:8080`) | `8080` |
+| `SPRING_PROFILES_ACTIVE` | Active Spring profile | `prod` |
+| `DB_URL` | JDBC Connection String | `jdbc:mysql://localhost:3306/placement_db?useSSL=false&allowPublicKeyRetrieval=true` |
+| `DB_USERNAME` | Database username (never hardcoded) | `root` |
+| `DB_PASSWORD` | Database password (never hardcoded, in `.env`) | `your_secure_password` |
 | `JWT_SECRET` | 256-bit secret key for HMAC-SHA256 | `32+ characters secret phrase` |
 | `AI_PROVIDER` | AI service provider | `openai` or `gemini` |
 | `AI_API_KEY` | Real provider API key | `sk-proj-...` |

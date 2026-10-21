@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children, allowedRoles }) {
           alignItems: 'center',
           height: '100vh',
           background: 'var(--bg-main)',
-          color: '#fff',
+          color: 'var(--text-primary)',
           fontSize: '15px',
         }}
       >

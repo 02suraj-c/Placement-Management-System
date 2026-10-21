@@ -68,8 +68,8 @@ export default function AdminDashboard() {
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
-          System Administration & RBAC
+        <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          JECRC System Administration & RBAC
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
           Manage user permissions, monitor system activity, and assign security roles across the campus network.
@@ -136,8 +136,8 @@ export default function AdminDashboard() {
 
       {/* User Management Table */}
       <div className="card">
-        <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <UserCog size={18} color="#3b82f6" />
+        <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <UserCog size={18} color="var(--primary)" />
           <span>User Directory & Role Assignment</span>
         </h3>
 
@@ -156,7 +156,7 @@ export default function AdminDashboard() {
               {users.map((u) => (
                 <tr key={u.id}>
                   <td>
-                    <div style={{ fontWeight: '600', color: '#fff' }}>{u.name}</div>
+                    <div style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{u.name}</div>
                     <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>{u.department || 'General'}</div>
                   </td>
                   <td>{u.email}</td>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { ShieldCheck, UserCheck, GraduationCap, Briefcase, Award } from 'lucide-react';
+import ThemeToggle from '../../components/common/ThemeToggle';
 
 export default function Login() {
   const { login } = useAuth();
@@ -65,11 +66,14 @@ export default function Login() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.themeToggleContainer}>
+        <ThemeToggle showLabel />
+      </div>
       <div style={styles.card}>
         <div style={styles.logoBadge}>
           <GraduationCap size={28} color="#3b82f6" />
         </div>
-        <h2 style={styles.title}>Placement Management System</h2>
+        <h2 style={styles.title}>JECRC Placement Portal</h2>
         <p style={styles.subtitle}>Sign in to access your role-based portal</p>
 
         {error && <div style={styles.error}>{error}</div>}
@@ -170,26 +174,35 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#090d16',
-    color: '#e2e8f0',
+    background: 'var(--bg-main)',
+    color: 'var(--text-primary)',
     fontFamily: 'Inter, system-ui, sans-serif',
     padding: '24px',
+    position: 'relative',
+    transition: 'background-color 0.2s ease, color 0.2s ease',
+  },
+  themeToggleContainer: {
+    position: 'absolute',
+    top: '20px',
+    right: '24px',
+    zIndex: 10,
   },
   card: {
     width: '100%',
     maxWidth: '460px',
-    background: '#0f172a',
+    background: 'var(--bg-card)',
     padding: '36px',
     borderRadius: '16px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: 'var(--shadow-card)',
+    border: '1px solid var(--border-subtle)',
+    transition: 'background-color 0.2s ease, border-color 0.2s ease',
   },
   logoBadge: {
     width: '48px',
     height: '48px',
     margin: '0 auto 16px',
     borderRadius: '12px',
-    background: 'rgba(59, 130, 246, 0.12)',
+    background: 'var(--primary-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.25)',
     display: 'flex',
     alignItems: 'center',
@@ -200,21 +213,21 @@ const styles = {
     fontSize: '22px',
     fontWeight: '700',
     textAlign: 'center',
-    color: '#f8fafc',
+    color: 'var(--text-primary)',
     letterSpacing: '-0.02em',
   },
   subtitle: {
     margin: '0 0 22px 0',
     fontSize: '13px',
     textAlign: 'center',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
   },
   error: {
     padding: '12px',
     borderRadius: '8px',
-    background: 'rgba(239, 68, 68, 0.15)',
+    background: 'var(--danger-subtle)',
     border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: '#fca5a5',
+    color: 'var(--danger)',
     fontSize: '13px',
     marginBottom: '18px',
     textAlign: 'center',
@@ -232,22 +245,22 @@ const styles = {
   label: {
     fontSize: '13px',
     fontWeight: '500',
-    color: '#cbd5e1',
+    color: 'var(--text-secondary)',
   },
   input: {
     padding: '11px 14px',
     borderRadius: '8px',
-    background: '#182234',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#f8fafc',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-input)',
+    color: 'var(--text-primary)',
     fontSize: '14px',
     outline: 'none',
-    transition: 'border-color 0.15s ease',
+    transition: 'border-color 0.15s ease, background-color 0.2s ease',
   },
   button: {
     padding: '12px',
     borderRadius: '8px',
-    background: '#3b82f6',
+    background: 'var(--primary)',
     border: 'none',
     color: '#ffffff',
     fontSize: '14px',
@@ -259,7 +272,7 @@ const styles = {
   demoSection: {
     marginTop: '24px',
     paddingTop: '20px',
-    borderTop: '1px solid rgba(255, 255, 255, 0.08)',
+    borderTop: '1px solid var(--border-subtle)',
   },
   demoHeader: {
     textAlign: 'center',
@@ -269,7 +282,7 @@ const styles = {
     fontSize: '11px',
     fontWeight: '700',
     letterSpacing: '0.06em',
-    color: '#64748b',
+    color: 'var(--text-muted)',
   },
   demoGrid: {
     display: 'grid',
@@ -283,9 +296,9 @@ const styles = {
     gap: '8px',
     padding: '8px 10px',
     borderRadius: '8px',
-    background: '#182234',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
-    color: '#e2e8f0',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-subtle)',
+    color: 'var(--text-primary)',
     fontSize: '12px',
     fontWeight: '500',
     cursor: 'pointer',
@@ -295,10 +308,10 @@ const styles = {
     marginTop: '22px',
     fontSize: '13px',
     textAlign: 'center',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
   },
   link: {
-    color: '#60a5fa',
+    color: 'var(--primary)',
     textDecoration: 'none',
     fontWeight: '500',
   },

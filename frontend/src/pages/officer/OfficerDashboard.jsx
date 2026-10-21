@@ -94,10 +94,10 @@ export default function OfficerDashboard() {
               marginBottom: '8px',
             }}
           >
-            Training & Placement Cell (TPO)
+            JECRC Training & Placement Cell (TPO)
           </span>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
-            Campus Placement Command Center
+          <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
+            JECRC Placement Command Center
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '650px' }}>
             Coordinate on-campus recruitment, review student candidate shortlists, configure company criteria, and oversee interview scheduling.
@@ -173,20 +173,21 @@ export default function OfficerDashboard() {
       {/* Charts & Drive Quick List */}
       <div className="grid-2" style={{ marginBottom: '28px' }}>
         <div className="card">
-          <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '18px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '18px' }}>
             Recruitment Funnel Overview
           </h3>
           <div style={{ height: '220px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} allowDecimals={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: 'var(--bg-card)',
+                    borderColor: 'var(--border-subtle)',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
@@ -202,7 +203,7 @@ export default function OfficerDashboard() {
         {/* Quick Link Navigation */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '14px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '14px' }}>
               Officer Workflow Shortcuts
             </h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -219,7 +220,7 @@ export default function OfficerDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: '600', color: '#fff', fontSize: '14px' }}>
+                  <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '14px' }}>
                     Process Applicant Roster
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -242,7 +243,7 @@ export default function OfficerDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: '600', color: '#fff', fontSize: '14px' }}>
+                  <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '14px' }}>
                     Schedule Interview Round
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>
@@ -265,7 +266,7 @@ export default function OfficerDashboard() {
                 }}
               >
                 <div>
-                  <div style={{ fontWeight: '600', color: '#fff', fontSize: '14px' }}>
+                  <div style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '14px' }}>
                     Post New Placement Drive
                   </div>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>

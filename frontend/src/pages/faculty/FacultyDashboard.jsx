@@ -25,8 +25,8 @@ export default function FacultyDashboard() {
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
-          Faculty Coordinator Portal
+        <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          JECRC Faculty Coordinator Portal
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
           Review department student academic clearances, verify CGPA documentation, and authorize placement drive eligibility.
@@ -75,7 +75,7 @@ export default function FacultyDashboard() {
       </div>
 
       <div className="card">
-        <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '16px' }}>
+        <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '16px' }}>
           Student Verification Queue (CSE Batch 2026)
         </h3>
 
@@ -94,7 +94,7 @@ export default function FacultyDashboard() {
             <tbody>
               {students.map((st) => (
                 <tr key={st.id}>
-                  <td style={{ fontWeight: '600', color: '#fff' }}>{st.name}</td>
+                  <td style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{st.name}</td>
                   <td>{st.roll}</td>
                   <td>
                     <strong style={{ color: '#34d399' }}>{st.cgpa}</strong>

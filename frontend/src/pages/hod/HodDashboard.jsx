@@ -36,8 +36,8 @@ export default function HodDashboard() {
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '22px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
-          Head of Department (HOD) Analytics
+        <h2 style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
+          JECRC Head of Department (HOD) Analytics
         </h2>
         <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
           Comprehensive department-level placement performance, recruiter engagement, and compensation statistics.
@@ -87,43 +87,45 @@ export default function HodDashboard() {
 
       <div className="grid-2">
         <div className="card">
-          <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '18px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '18px' }}>
             Top Recruiter Placements (CSE 2026)
           </h3>
           <div style={{ height: '240px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={branchData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="company" stroke="#64748b" fontSize={12} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <XAxis dataKey="company" stroke="var(--text-muted)" fontSize={12} tickLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} allowDecimals={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: 'var(--bg-card)',
+                    borderColor: 'var(--border-subtle)',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 />
-                <Bar dataKey="placed" fill="#3b82f6" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="placed" fill="var(--primary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         <div className="card">
-          <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '18px' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '18px' }}>
             CTC Package Distribution
           </h3>
           <div style={{ height: '240px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={ctcDistribution} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="range" stroke="#64748b" fontSize={11} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <XAxis dataKey="range" stroke="var(--text-muted)" fontSize={11} tickLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} allowDecimals={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: 'var(--bg-card)',
+                    borderColor: 'var(--border-subtle)',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>

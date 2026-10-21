@@ -18,7 +18,7 @@ import java.util.function.Function;
 @Service
 public class JwtService {
 
-    @Value("${jwt.secret:404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970}")
+    @Value("${jwt.secret:local-development-secret-key-must-be-at-least-256-bits-long-for-hmac-sha256}")
     private String secretKey;
 
     @Value("${jwt.expiration-ms:86400000}")

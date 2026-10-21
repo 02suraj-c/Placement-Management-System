@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { GraduationCap } from 'lucide-react';
+import ThemeToggle from '../../components/common/ThemeToggle';
 
 export default function Register() {
   const { register } = useAuth();
@@ -31,12 +32,15 @@ export default function Register() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.themeToggleContainer}>
+        <ThemeToggle showLabel />
+      </div>
       <div style={styles.card}>
         <div style={styles.logoBadge}>
           <GraduationCap size={28} color="#3b82f6" />
         </div>
         <h2 style={styles.title}>Create an Account</h2>
-        <p style={styles.subtitle}>Register for Placement Management System</p>
+        <p style={styles.subtitle}>Register for JECRC Placement Portal</p>
 
         {error && <div style={styles.error}>{error}</div>}
 
@@ -115,26 +119,35 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#090d16',
-    color: '#e2e8f0',
+    background: 'var(--bg-main)',
+    color: 'var(--text-primary)',
     fontFamily: 'Inter, system-ui, sans-serif',
     padding: '24px',
+    position: 'relative',
+    transition: 'background-color 0.2s ease, color 0.2s ease',
+  },
+  themeToggleContainer: {
+    position: 'absolute',
+    top: '20px',
+    right: '24px',
+    zIndex: 10,
   },
   card: {
     width: '100%',
     maxWidth: '460px',
-    background: '#0f172a',
+    background: 'var(--bg-card)',
     padding: '36px',
     borderRadius: '16px',
-    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
-    border: '1px solid rgba(255, 255, 255, 0.08)',
+    boxShadow: 'var(--shadow-card)',
+    border: '1px solid var(--border-subtle)',
+    transition: 'background-color 0.2s ease, border-color 0.2s ease',
   },
   logoBadge: {
     width: '48px',
     height: '48px',
     margin: '0 auto 16px',
     borderRadius: '12px',
-    background: 'rgba(59, 130, 246, 0.12)',
+    background: 'var(--primary-subtle)',
     border: '1px solid rgba(59, 130, 246, 0.25)',
     display: 'flex',
     alignItems: 'center',
@@ -145,21 +158,21 @@ const styles = {
     fontSize: '22px',
     fontWeight: '700',
     textAlign: 'center',
-    color: '#f8fafc',
+    color: 'var(--text-primary)',
     letterSpacing: '-0.02em',
   },
   subtitle: {
     margin: '0 0 22px 0',
     fontSize: '13px',
     textAlign: 'center',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
   },
   error: {
     padding: '12px',
     borderRadius: '8px',
-    background: 'rgba(239, 68, 68, 0.15)',
+    background: 'var(--danger-subtle)',
     border: '1px solid rgba(239, 68, 68, 0.3)',
-    color: '#fca5a5',
+    color: 'var(--danger)',
     fontSize: '13px',
     marginBottom: '18px',
     textAlign: 'center',
@@ -177,45 +190,48 @@ const styles = {
   label: {
     fontSize: '13px',
     fontWeight: '500',
-    color: '#cbd5e1',
+    color: 'var(--text-secondary)',
   },
   input: {
     padding: '11px 14px',
     borderRadius: '8px',
-    background: '#182234',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#f8fafc',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-input)',
+    color: 'var(--text-primary)',
     fontSize: '14px',
     outline: 'none',
+    transition: 'border-color 0.15s ease, background-color 0.2s ease',
   },
   select: {
     padding: '11px 14px',
     borderRadius: '8px',
-    background: '#182234',
-    border: '1px solid rgba(255, 255, 255, 0.1)',
-    color: '#f8fafc',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-input)',
+    color: 'var(--text-primary)',
     fontSize: '14px',
     outline: 'none',
+    transition: 'border-color 0.15s ease, background-color 0.2s ease',
   },
   button: {
     padding: '12px',
     borderRadius: '8px',
-    background: '#3b82f6',
+    background: 'var(--primary)',
     border: 'none',
     color: '#ffffff',
     fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
     marginTop: '6px',
+    transition: 'background-color 0.15s ease',
   },
   footer: {
     marginTop: '22px',
     fontSize: '13px',
     textAlign: 'center',
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
   },
   link: {
-    color: '#60a5fa',
+    color: 'var(--primary)',
     textDecoration: 'none',
     fontWeight: '500',
   },

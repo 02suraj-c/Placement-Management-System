@@ -114,13 +114,13 @@ export default function StudentDashboard() {
                 color: '#60a5fa',
               }}
             >
-              Academic Year 2026 Batch
+              JECRC • Academic Year 2026 Batch
             </span>
             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
               {user?.department || 'Computer Science & Engineering'}
             </span>
           </div>
-          <h2 style={{ fontSize: '24px', fontWeight: '800', color: '#fff', marginBottom: '6px' }}>
+          <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
             Welcome back, {user?.name || 'Aarav Sharma'}!
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '600px' }}>
@@ -199,7 +199,7 @@ export default function StudentDashboard() {
         {/* Application Pipeline Chart */}
         <div className="card">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)' }}>
               Application Funnel
             </h3>
             <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Real-time status</span>
@@ -208,14 +208,15 @@ export default function StudentDashboard() {
           <div style={{ height: '220px', width: '100%' }}>
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={chartData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                <XAxis dataKey="name" stroke="#64748b" fontSize={12} tickLine={false} />
-                <YAxis stroke="#64748b" fontSize={12} allowDecimals={false} />
+                <XAxis dataKey="name" stroke="var(--text-muted)" fontSize={12} tickLine={false} />
+                <YAxis stroke="var(--text-muted)" fontSize={12} allowDecimals={false} />
                 <Tooltip
                   contentStyle={{
-                    backgroundColor: '#1e293b',
-                    borderColor: 'rgba(255,255,255,0.1)',
+                    backgroundColor: 'var(--bg-card)',
+                    borderColor: 'var(--border-subtle)',
                     borderRadius: '8px',
-                    color: '#fff',
+                    color: 'var(--text-primary)',
+                    boxShadow: 'var(--shadow-card)',
                   }}
                 />
                 <Bar dataKey="count" radius={[6, 6, 0, 0]}>
@@ -231,7 +232,7 @@ export default function StudentDashboard() {
         {/* Upcoming Interview Highlight */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)' }}>
               Upcoming Interviews
             </h3>
             <Link to="/student/interviews" style={{ fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
@@ -256,7 +257,7 @@ export default function StudentDashboard() {
                   }}
                 >
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                    <span style={{ fontWeight: '600', color: '#fff', fontSize: '14px' }}>
+                    <span style={{ fontWeight: '600', color: 'var(--text-primary)', fontSize: '14px' }}>
                       {interview.company}
                     </span>
                     <span className="badge badge-interview_scheduled">
@@ -286,7 +287,7 @@ export default function StudentDashboard() {
       <div className="card">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)' }}>
               Active Drives Available for Registration
             </h3>
             <p style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
@@ -318,7 +319,7 @@ export default function StudentDashboard() {
                 return (
                   <tr key={drive.id}>
                     <td>
-                      <span style={{ fontWeight: '600', color: '#fff' }}>{drive.company}</span>
+                      <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>{drive.company}</span>
                       <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>{drive.location}</div>
                     </td>
                     <td>{drive.role}</td>

@@ -74,7 +74,7 @@ export default function Sidebar({ isOpen, onClose }) {
           <GraduationCap size={22} />
         </div>
         <div>
-          <h1 className="brand-title">PMS Portal</h1>
+          <h1 className="brand-title">JECRC Placement Portal</h1>
           <p className="brand-sub">Campus Placement Cell</p>
         </div>
       </div>

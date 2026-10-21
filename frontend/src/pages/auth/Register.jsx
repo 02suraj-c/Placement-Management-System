@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { GraduationCap } from 'lucide-react';
 
 export default function Register() {
   const { register } = useAuth();
+  const navigate = useNavigate();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -17,7 +20,8 @@ export default function Register() {
 
     try {
       await register(name, email, password, role);
-      window.location.href = '/login?registered=true';
+      // Route user to appropriate portal or login
+      navigate('/login?registered=true');
     } catch (err) {
       setError(err.message || 'Registration failed.');
     } finally {
@@ -28,6 +32,9 @@ export default function Register() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+        <div style={styles.logoBadge}>
+          <GraduationCap size={28} color="#3b82f6" />
+        </div>
         <h2 style={styles.title}>Create an Account</h2>
         <p style={styles.subtitle}>Register for Placement Management System</p>
 
@@ -41,7 +48,7 @@ export default function Register() {
               required
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="John Doe"
+              placeholder="e.g. Ananya Iyer"
               style={styles.input}
             />
           </div>
@@ -53,7 +60,7 @@ export default function Register() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="user@example.com"
+              placeholder="student@placement.edu"
               style={styles.input}
             />
           </div>
@@ -79,10 +86,10 @@ export default function Register() {
               style={styles.select}
             >
               <option value="ROLE_STUDENT">Student</option>
-              <option value="ROLE_FACULTY">Faculty</option>
+              <option value="ROLE_FACULTY">Faculty Coordinator</option>
               <option value="ROLE_HOD">Head of Department (HOD)</option>
-              <option value="ROLE_OFFICER">Placement Officer</option>
-              <option value="ROLE_COMPANY">Company / Recruiter</option>
+              <option value="ROLE_PLACEMENT_OFFICER">Placement Officer (TPO)</option>
+              <option value="ROLE_COMPANY">Company Recruiter</option>
             </select>
           </div>
 
@@ -92,7 +99,10 @@ export default function Register() {
         </form>
 
         <p style={styles.footer}>
-          Already have an account? <a href="/login" style={styles.link}>Sign in</a>
+          Already have an account?{' '}
+          <Link to="/login" style={styles.link}>
+            Sign in
+          </Link>
         </p>
       </div>
     </div>
@@ -105,41 +115,53 @@ const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    background: '#0f172a',
+    background: '#090d16',
     color: '#e2e8f0',
     fontFamily: 'Inter, system-ui, sans-serif',
-    padding: '20px',
+    padding: '24px',
   },
   card: {
     width: '100%',
-    maxWidth: '440px',
-    background: '#1e293b',
+    maxWidth: '460px',
+    background: '#0f172a',
     padding: '36px',
     borderRadius: '16px',
-    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.5)',
-    border: '1px solid #334155',
+    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.7)',
+    border: '1px solid rgba(255, 255, 255, 0.08)',
+  },
+  logoBadge: {
+    width: '48px',
+    height: '48px',
+    margin: '0 auto 16px',
+    borderRadius: '12px',
+    background: 'rgba(59, 130, 246, 0.12)',
+    border: '1px solid rgba(59, 130, 246, 0.25)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   title: {
-    margin: '0 0 8px 0',
+    margin: '0 0 6px 0',
     fontSize: '22px',
     fontWeight: '700',
     textAlign: 'center',
     color: '#f8fafc',
+    letterSpacing: '-0.02em',
   },
   subtitle: {
-    margin: '0 0 24px 0',
-    fontSize: '14px',
+    margin: '0 0 22px 0',
+    fontSize: '13px',
     textAlign: 'center',
     color: '#94a3b8',
   },
   error: {
     padding: '12px',
     borderRadius: '8px',
-    background: 'rgba(239, 68, 68, 0.2)',
-    border: '1px solid #ef4444',
+    background: 'rgba(239, 68, 68, 0.15)',
+    border: '1px solid rgba(239, 68, 68, 0.3)',
     color: '#fca5a5',
     fontSize: '13px',
-    marginBottom: '20px',
+    marginBottom: '18px',
     textAlign: 'center',
   },
   form: {
@@ -158,19 +180,19 @@ const styles = {
     color: '#cbd5e1',
   },
   input: {
-    padding: '12px',
+    padding: '11px 14px',
     borderRadius: '8px',
-    background: '#0f172a',
-    border: '1px solid #334155',
+    background: '#182234',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#f8fafc',
     fontSize: '14px',
     outline: 'none',
   },
   select: {
-    padding: '12px',
+    padding: '11px 14px',
     borderRadius: '8px',
-    background: '#0f172a',
-    border: '1px solid #334155',
+    background: '#182234',
+    border: '1px solid rgba(255, 255, 255, 0.1)',
     color: '#f8fafc',
     fontSize: '14px',
     outline: 'none',
@@ -181,13 +203,13 @@ const styles = {
     background: '#3b82f6',
     border: 'none',
     color: '#ffffff',
-    fontSize: '15px',
+    fontSize: '14px',
     fontWeight: '600',
     cursor: 'pointer',
     marginTop: '6px',
   },
   footer: {
-    marginTop: '24px',
+    marginTop: '22px',
     fontSize: '13px',
     textAlign: 'center',
     color: '#94a3b8',
@@ -195,5 +217,6 @@ const styles = {
   link: {
     color: '#60a5fa',
     textDecoration: 'none',
+    fontWeight: '500',
   },
 };

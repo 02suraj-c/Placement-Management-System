@@ -23,8 +23,7 @@ COPY --from=builder /workspace/target/*.jar app.jar
 
 # Environment variable defaults
 ENV PORT=8080 \
-    JAVA_OPTS="-Xms256m -Xmx512m -XX:+UseG1GC"
-
+    JAVA_OPTS="-Xms64m -Xmx256m -XX:+UseSerialGC -XX:MaxMetaspaceSize=128m"
 EXPOSE 8080
 
 # Health check using Spring Boot Actuator

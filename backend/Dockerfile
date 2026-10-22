@@ -16,8 +16,8 @@ WORKDIR /app
 
 # Add unprivileged system user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN mkdir -p /app/uploads && chown -R appuser:appgroup /app/uploads
 USER appuser
-
 # Copy jar from build stage
 COPY --from=builder /workspace/target/*.jar app.jar
 

@@ -37,6 +37,9 @@ export const AuthProvider = ({ children }) => {
   };
 
   const hasRole = (role) => {
+    if (role === 'ROLE_PLACEMENT_OFFICER' || role === 'ROLE_OFFICER') {
+      return user?.role === 'ROLE_PLACEMENT_OFFICER' || user?.role === 'ROLE_OFFICER';
+    }
     return user?.role === role;
   };
 

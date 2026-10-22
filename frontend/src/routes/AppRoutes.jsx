@@ -25,6 +25,9 @@ import ApplicantReview from '../pages/officer/ApplicantReview';
 import InterviewScheduler from '../pages/officer/InterviewScheduler';
 import QuestionBank from '../pages/officer/QuestionBank';
 
+// Placement Module Pages (Person 3)
+import Eligibility from '../pages/placement/Eligibility';
+
 // Faculty, HOD & Admin Pages
 import FacultyDashboard from '../pages/faculty/FacultyDashboard';
 import HodDashboard from '../pages/hod/HodDashboard';
@@ -101,6 +104,7 @@ export default function AppRoutes() {
         <Route path="applications" element={<ApplicantReview />} />
         <Route path="interviews" element={<InterviewScheduler />} />
         <Route path="questions" element={<QuestionBank />} />
+        <Route path="eligibility" element={<Eligibility />} />
       </Route>
 
       {/* Faculty Protected Routes */}

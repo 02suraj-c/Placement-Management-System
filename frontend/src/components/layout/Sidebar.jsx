@@ -33,6 +33,7 @@ export default function Sidebar({ isOpen, onClose }) {
           { label: 'Applicant Roster', to: '/placement/applications', icon: FileText },
           { label: 'Interview Scheduler', to: '/placement/interviews', icon: Calendar },
           { label: 'Question Bank', to: '/placement/questions', icon: BookOpen },
+          { label: 'Eligibility Checker', to: '/placement/eligibility', icon: CheckCircle },
         ];
       case 'ROLE_FACULTY':
         return [

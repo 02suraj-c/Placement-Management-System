@@ -19,7 +19,7 @@
     <description>Placement Management System Backend</description>
 
     <properties>
-        <java.version>25</java.version>
+        <java.version>17</java.version>
         <lombok.version>1.18.48</lombok.version>
         <mockito.version>5.18.0</mockito.version>
         <byte-buddy.version>1.18.4</byte-buddy.version>
@@ -134,7 +134,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.14.0</version>
                 <configuration>
-                    <release>25</release>
+                    <release>17</release>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>

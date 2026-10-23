@@ -86,6 +86,7 @@ export default function AppRoutes() {
         <Route path="drives" element={<EligibleDrives />} />
         <Route path="applications" element={<Applications />} />
         <Route path="interviews" element={<Interviews />} />
+        <Route path="questions" element={<QuestionBank />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="profile" element={<StudentProfile />} />
       </Route>

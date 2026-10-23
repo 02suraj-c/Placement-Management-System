@@ -122,13 +122,15 @@ class QuestionBankControllerTest {
     // ── TC-QC-04 ──────────────────────────────────────────────────────────────
     @Test
     @WithMockUser(roles = "STUDENT")
-    @DisplayName("TC-QC-04: STUDENT POST /api/questions → 403 Forbidden")
-    void create_student_returns403() throws Exception {
+    @DisplayName("TC-QC-04: STUDENT POST /api/questions → 201 Created (students can contribute company questions)")
+    void create_student_returns201() throws Exception {
+        when(questionBankService.create(any(), any())).thenReturn(sampleResponse());
+
         mockMvc.perform(post("/api/questions")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(validRequest()))
                         .with(csrf()))
-                .andExpect(status().isForbidden());
+                .andExpect(status().isCreated());
     }
 
     // ── TC-QC-05 ──────────────────────────────────────────────────────────────

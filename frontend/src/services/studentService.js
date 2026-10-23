@@ -24,25 +24,28 @@ export const studentService = {
     const store = getMockStore();
     const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
     const student = store.users.find(
-      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase() || u.role === 'ROLE_STUDENT'
+      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase()
     );
 
+    const gradYear = student?.passingYear || student?.graduationYear || storedUser?.graduationYear || storedUser?.batch || 2026;
+    const defaultRoll = student?.rollNumber || storedUser?.rollNumber || `CS${gradYear}-${String(storedUser?.id || student?.id || 101).slice(-3)}`;
+
     return {
-      id: student?.id || 1,
-      name: student?.name || 'Aarav Sharma',
-      email: student?.email || 'student@placement.edu',
-      rollNumber: student?.rollNumber || 'CS2026-042',
-      enrollmentNumber: student?.enrollmentNumber || 'EN2022-9876',
-      department: student?.department || 'Computer Science & Engineering',
-      course: student?.course || 'B.Tech',
-      passingYear: student?.passingYear || 2026,
-      cgpa: student?.cgpa !== undefined ? student.cgpa : 8.85,
-      tenthPercentage: student?.tenthPercentage !== undefined ? student.tenthPercentage : 92.5,
-      twelfthPercentage: student?.twelfthPercentage !== undefined ? student.twelfthPercentage : 89.0,
-      activeBacklogs: student?.backlogs !== undefined ? student.backlogs : 0,
+      id: storedUser?.id || student?.id || 1,
+      name: storedUser?.name || student?.name || 'Student',
+      email: storedUser?.email || student?.email || 'student@college.edu',
+      rollNumber: defaultRoll,
+      enrollmentNumber: student?.enrollmentNumber || storedUser?.enrollmentNumber || `EN${gradYear - 4}-001`,
+      department: student?.department || storedUser?.department || 'Computer Science & Engineering',
+      course: student?.course || storedUser?.course || 'B.Tech',
+      passingYear: gradYear,
+      cgpa: student?.cgpa !== undefined ? student.cgpa : (storedUser?.cgpa !== undefined ? storedUser.cgpa : 8.5),
+      tenthPercentage: student?.tenthPercentage !== undefined ? student.tenthPercentage : 90.0,
+      twelfthPercentage: student?.twelfthPercentage !== undefined ? student.twelfthPercentage : 88.0,
+      activeBacklogs: student?.backlogs !== undefined ? student.backlogs : (storedUser?.backlogs || 0),
       totalBacklogs: student?.totalBacklogs !== undefined ? student.totalBacklogs : 0,
-      phoneNumber: student?.phone || '+91 98765 43210',
-      skills: Array.isArray(student?.skills) ? student.skills.join(', ') : (student?.skills || 'Java, Spring Boot, React.js, MySQL, Docker'),
+      phoneNumber: student?.phone || storedUser?.phone || '+91 98765 43210',
+      skills: Array.isArray(student?.skills) ? student.skills.join(', ') : (student?.skills || 'Java, Spring Boot, React.js, MySQL'),
       resumeUrl: student?.resumeUrl || null,
     };
   },
@@ -82,7 +85,7 @@ export const studentService = {
     const store = getMockStore();
     const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
     const idx = store.users.findIndex(
-      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase() || u.role === 'ROLE_STUDENT'
+      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase()
     );
 
     if (idx !== -1) {
@@ -99,6 +102,7 @@ export const studentService = {
         department: payload.department,
         cgpa: payload.cgpa,
         backlogs: payload.activeBacklogs,
+        graduationYear: payload.passingYear,
       };
       localStorage.setItem('auth_user', JSON.stringify(updatedUser));
     }
@@ -106,10 +110,10 @@ export const studentService = {
     return {
       ...payload,
       id: storedUser.id || 1,
-      name: storedUser.name || 'Aarav Sharma',
-      email: storedUser.email || 'student@placement.edu',
-      rollNumber: storedUser.rollNumber || 'CS2026-042',
-      enrollmentNumber: storedUser.enrollmentNumber || 'EN2022-9876',
+      name: storedUser.name || 'Student',
+      email: storedUser.email || 'student@college.edu',
+      rollNumber: storedUser.rollNumber || `CS${payload.passingYear || 2026}-${storedUser.id || '101'}`,
+      enrollmentNumber: storedUser.enrollmentNumber || `EN${(payload.passingYear || 2026) - 4}-001`,
     };
   },
 

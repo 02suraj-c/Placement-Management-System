@@ -55,7 +55,9 @@ export const authService = {
     return data.data;
   },
 
-  async register(name, email, password, role) {
+  async register(name, email, password, role, year) {
+    const gradYear = parseInt(year || 2026, 10);
+
     if (isMockMode()) {
       const store = getMockStore();
       const existing = store.users.find(
@@ -65,6 +67,7 @@ export const authService = {
         throw new Error('An account with this email already exists.');
       }
 
+      const roll = `CS${gradYear}-${Math.floor(100 + Math.random() * 900)}`;
       const newUser = {
         id: Date.now(),
         name,
@@ -72,10 +75,14 @@ export const authService = {
         password,
         role: role || 'ROLE_STUDENT',
         department: 'Computer Science & Engineering',
+        course: 'B.Tech',
+        graduationYear: gradYear,
+        passingYear: gradYear,
+        batch: String(gradYear),
         cgpa: 8.5,
         backlogs: 0,
-        rollNumber: `ST${Math.floor(1000 + Math.random() * 9000)}`,
-        batch: '2026',
+        rollNumber: roll,
+        enrollmentNumber: `EN${gradYear - 4}-${Math.floor(1000 + Math.random() * 9000)}`,
         skills: ['Java', 'SQL', 'Web Development'],
       };
 
@@ -90,6 +97,9 @@ export const authService = {
         email: newUser.email,
         role: newUser.role,
         department: newUser.department,
+        course: newUser.course,
+        graduationYear: newUser.graduationYear,
+        passingYear: newUser.passingYear,
         cgpa: newUser.cgpa,
         backlogs: newUser.backlogs,
         rollNumber: newUser.rollNumber,
@@ -105,7 +115,7 @@ export const authService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password, role }),
+      body: JSON.stringify({ name, email, password, role, graduationYear: gradYear }),
     });
 
     const data = await response.json();
@@ -114,8 +124,9 @@ export const authService = {
     }
 
     if (data.data?.token) {
+      const userPayload = { ...data.data, graduationYear: gradYear, passingYear: gradYear };
       localStorage.setItem('auth_token', data.data.token);
-      localStorage.setItem('auth_user', JSON.stringify(data.data));
+      localStorage.setItem('auth_user', JSON.stringify(userPayload));
     }
     return data.data;
   },

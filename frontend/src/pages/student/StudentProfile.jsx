@@ -604,7 +604,7 @@ export default function StudentProfile() {
                     <User size={14} /> Full Name
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    {profile?.name || user?.name || 'Aarav Sharma'}
+                    {profile?.name || user?.name || 'Student Profile'}
                   </div>
                 </div>
 
@@ -613,7 +613,7 @@ export default function StudentProfile() {
                     <Mail size={14} /> Institutional Email
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    {profile?.email || user?.email || 'student@placement.edu'}
+                    {profile?.email || user?.email || 'student@college.edu'}
                   </div>
                 </div>
 
@@ -622,7 +622,7 @@ export default function StudentProfile() {
                     <Hash size={14} /> Roll / Registration Number
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    {profile?.rollNumber || 'CS2026-042'}
+                    {profile?.rollNumber || user?.rollNumber || 'CS2026-001'}
                   </div>
                 </div>
 
@@ -631,14 +631,14 @@ export default function StudentProfile() {
                     <BookOpen size={14} /> Enrollment / University ID
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    {profile?.enrollmentNumber || 'EN2022-9876'}
+                    {profile?.enrollmentNumber || user?.enrollmentNumber || 'EN2022-001'}
                   </div>
                 </div>
 
                 <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)' }}>Degree & Department</div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    {profile?.course || 'B.Tech'} in {profile?.department || 'Computer Science & Engineering'}
+                    {profile?.course || user?.course || 'B.Tech'} in {profile?.department || user?.department || 'Computer Science & Engineering'}
                   </div>
                 </div>
 
@@ -647,7 +647,7 @@ export default function StudentProfile() {
                     <Calendar size={14} /> Graduating Batch
                   </div>
                   <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
-                    Class of {profile?.passingYear || 2026}
+                    Class of {profile?.passingYear || profile?.graduationYear || user?.graduationYear || 2026}
                   </div>
                 </div>
 

@@ -34,10 +34,10 @@ public class QuestionBankController {
     private final QuestionBankService questionBankService;
 
     // ─────────────────────────────────────────────────────────────────────────
-    // POST /api/questions  — create a new question
+    // POST /api/questions  — create a new question (STUDENT, OFFICER, FACULTY, ADMIN)
     // ─────────────────────────────────────────────────────────────────────────
     @PostMapping
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO','COORDINATOR','FACULTY')")
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<QuestionResponse> create(
             @Valid @RequestBody QuestionRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {

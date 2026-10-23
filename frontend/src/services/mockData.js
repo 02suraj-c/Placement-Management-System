@@ -266,6 +266,79 @@ const INITIAL_NOTIFICATIONS = [
   }
 ];
 
+export const INITIAL_QUESTIONS = [
+  {
+    id: 1,
+    company: 'Tata Consultancy Services (TCS)',
+    topic: 'Java & OOP',
+    targetRole: 'Digital Software Engineer',
+    difficulty: 'MEDIUM',
+    questionType: 'TECHNICAL',
+    questionText: 'Explain the internal working of HashMap in Java 8. How are collisions handled using red-black trees?',
+    answer: 'In Java 8, when the number of items in a hash bucket exceeds TREEIFY_THRESHOLD (8) and the table capacity is at least 64, the linked list transforms into a balanced red-black tree reducing lookup time from O(n) to O(log n).',
+    yearAsked: 2026,
+    source: 'STUDENT_CONTRIBUTED',
+    createdBy: 'student@jecrc.edu',
+    createdAt: '2026-10-20T10:00:00'
+  },
+  {
+    id: 2,
+    company: 'Infosys',
+    topic: 'Data Structures & Algorithms',
+    targetRole: 'Specialist Programmer',
+    difficulty: 'HARD',
+    questionType: 'CODING',
+    questionText: 'Find the lowest common ancestor (LCA) in a binary tree with duplicate values. Optimize time complexity to O(N).',
+    answer: 'Traverse the tree recursively. At each node, check if the root matches either p or q. Recurse left and right; if both return non-null, current node is the LCA.',
+    yearAsked: 2026,
+    source: 'STUDENT_CONTRIBUTED',
+    createdBy: 'student@jecrc.edu',
+    createdAt: '2026-10-21T14:30:00'
+  },
+  {
+    id: 3,
+    company: 'Amazon',
+    topic: 'System Design & Distributed Systems',
+    targetRole: 'SDE I',
+    difficulty: 'HARD',
+    questionType: 'TECHNICAL',
+    questionText: 'Design an idempotent payment processing microservice architecture handling network partitions and retries.',
+    answer: 'Use unique idempotency keys per transaction stored with TTL in distributed cache (Redis) + transactional outbox pattern with database row locks.',
+    yearAsked: 2025,
+    source: 'STUDENT_CONTRIBUTED',
+    createdBy: 'student@jecrc.edu',
+    createdAt: '2026-10-18T11:00:00'
+  },
+  {
+    id: 4,
+    company: 'Wipro',
+    topic: 'Database Management Systems',
+    targetRole: 'Project Engineer (Turbo)',
+    difficulty: 'EASY',
+    questionType: 'TECHNICAL',
+    questionText: 'Write an SQL query to retrieve the second highest salary without using the LIMIT clause.',
+    answer: 'SELECT MAX(salary) FROM Employees WHERE salary < (SELECT MAX(salary) FROM Employees); or use DENSE_RANK() OVER (ORDER BY salary DESC).',
+    yearAsked: 2026,
+    source: 'STUDENT_CONTRIBUTED',
+    createdBy: 'student@jecrc.edu',
+    createdAt: '2026-10-19T09:15:00'
+  },
+  {
+    id: 5,
+    company: 'HCLTech',
+    topic: 'Operating Systems & Concurrency',
+    targetRole: 'Graduate Engineer Trainee',
+    difficulty: 'MEDIUM',
+    questionType: 'TECHNICAL',
+    questionText: 'What is the dining philosophers problem? How can deadlocks be prevented using resource hierarchy?',
+    answer: 'Impose strict numbering on chopsticks: philosophers must always pick the lower-numbered chopstick first before the higher-numbered one, breaking circular wait.',
+    yearAsked: 2025,
+    source: 'STUDENT_CONTRIBUTED',
+    createdBy: 'student@jecrc.edu',
+    createdAt: '2026-10-15T16:00:00'
+  }
+];
+
 // LocalStorage Persistence Layer
 const STORAGE_KEY = "pms_mock_store_v1";
 
@@ -273,7 +346,12 @@ export const getMockStore = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
-      return JSON.parse(raw);
+      const parsed = JSON.parse(raw);
+      if (!parsed.questions || parsed.questions.length === 0) {
+        parsed.questions = INITIAL_QUESTIONS;
+        saveMockStore(parsed);
+      }
+      return parsed;
     }
   } catch (e) {
     console.error("Failed to load mock data from localStorage", e);
@@ -284,7 +362,8 @@ export const getMockStore = () => {
     drives: INITIAL_DRIVES,
     applications: INITIAL_APPLICATIONS,
     interviews: INITIAL_INTERVIEWS,
-    notifications: INITIAL_NOTIFICATIONS
+    notifications: INITIAL_NOTIFICATIONS,
+    questions: INITIAL_QUESTIONS
   };
   localStorage.setItem(STORAGE_KEY, JSON.stringify(initial));
   return initial;

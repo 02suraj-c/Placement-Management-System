@@ -11,6 +11,7 @@ export default function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('ROLE_STUDENT');
+  const [year, setYear] = useState('2026');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +21,7 @@ export default function Register() {
     setLoading(true);
 
     try {
-      await register(name, email, password, role);
+      await register(name, email, password, role, year);
       // Route user to appropriate portal or login
       navigate('/login?registered=true');
     } catch (err) {
@@ -94,6 +95,22 @@ export default function Register() {
               <option value="ROLE_HOD">Head of Department (HOD)</option>
               <option value="ROLE_PLACEMENT_OFFICER">Placement Officer (TPO)</option>
               <option value="ROLE_COMPANY">Company Recruiter</option>
+            </select>
+          </div>
+
+          <div style={styles.formGroup}>
+            <label style={styles.label}>Graduation / Passing Year</label>
+            <select
+              value={year}
+              onChange={(e) => setYear(e.target.value)}
+              style={styles.select}
+            >
+              <option value="2024">2024 (Alumni)</option>
+              <option value="2025">2025 (Graduating Soon)</option>
+              <option value="2026">2026 (Batch of 2026 - Current)</option>
+              <option value="2027">2027 (Pre-Final Year)</option>
+              <option value="2028">2028 (Sophomore)</option>
+              <option value="2029">2029 (Freshman)</option>
             </select>
           </div>
 

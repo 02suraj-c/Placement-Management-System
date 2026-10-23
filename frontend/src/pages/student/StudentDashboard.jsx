@@ -114,14 +114,14 @@ export default function StudentDashboard() {
                 color: '#60a5fa',
               }}
             >
-              JECRC • Academic Year 2026 Batch
+              JECRC • Academic Year {user?.graduationYear || '2026'} Batch
             </span>
             <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>
               {user?.department || 'Computer Science & Engineering'}
             </span>
           </div>
           <h2 style={{ fontSize: '24px', fontWeight: '800', color: 'var(--text-primary)', marginBottom: '6px' }}>
-            Welcome back, {user?.name || 'Aarav Sharma'}!
+            Welcome back, {user?.name || 'Student'}!
           </h2>
           <p style={{ fontSize: '14px', color: 'var(--text-secondary)', maxWidth: '600px' }}>
             You are currently eligible for {eligibleDrivesCount} on-campus drives. Your academic profile meets placement criteria with a CGPA of {studentCgpa}.

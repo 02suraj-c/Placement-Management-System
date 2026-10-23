@@ -37,7 +37,9 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/actuator/**", "/error", "/h2-console/**").permitAll()
+                        .requestMatchers("/api/auth/**", "/error").permitAll()
+                        // SECURITY: Actuator restricted to ADMIN only — was previously permitAll
+                        .requestMatchers("/actuator/**").hasRole("ADMIN")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )

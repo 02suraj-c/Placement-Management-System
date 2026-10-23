@@ -42,7 +42,7 @@ public class QuestionBankService {
                 .questionType(req.getQuestionType())
                 .tags(req.getTags())
                 .yearAsked(req.getYearAsked())
-                .source(req.getSource() != null ? req.getSource() : "MANUAL")
+                .source(req.getSource() != null ? req.getSource() : "STUDENT_CONTRIBUTED")
                 .createdBy(createdByUsername)
                 .build();
 

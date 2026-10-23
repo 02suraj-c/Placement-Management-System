@@ -18,7 +18,8 @@ public class CorsConfig {
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin"));
-        configuration.setExposedHeaders(List.of("Authorization"));
+        // SECURITY: Do NOT expose Authorization header via CORS — token is in the response body
+        configuration.setExposedHeaders(List.of());
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

@@ -44,6 +44,8 @@ public class QuestionRequest {
     @Min(2000) @Max(2100)
     private Integer yearAsked;
 
+    private Integer marks;
+
     @Size(max = 50)
     private String source;           // defaults to MANUAL if omitted
 }

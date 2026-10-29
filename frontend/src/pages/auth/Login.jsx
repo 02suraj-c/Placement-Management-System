@@ -66,12 +66,14 @@ export default function Login() {
 
   return (
     <div style={styles.container}>
+      <div style={styles.ambientGlowTop} />
+      <div style={styles.ambientGlowBottom} />
       <div style={styles.themeToggleContainer}>
         <ThemeToggle showLabel />
       </div>
       <div style={styles.card}>
         <div style={styles.logoBadge}>
-          <GraduationCap size={28} color="#3b82f6" />
+          <GraduationCap size={28} color="#6366f1" />
         </div>
         <h2 style={styles.title}>JECRC Placement Portal</h2>
         <p style={styles.subtitle}>Sign in to access your role-based portal</p>
@@ -176,10 +178,32 @@ const styles = {
     justifyContent: 'center',
     background: 'var(--bg-main)',
     color: 'var(--text-primary)',
-    fontFamily: 'Inter, system-ui, sans-serif',
+    fontFamily: 'var(--font-sans)',
     padding: '24px',
     position: 'relative',
-    transition: 'background-color 0.2s ease, color 0.2s ease',
+    overflow: 'hidden',
+  },
+  ambientGlowTop: {
+    position: 'absolute',
+    top: '-15%',
+    left: '20%',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 0,
+  },
+  ambientGlowBottom: {
+    position: 'absolute',
+    bottom: '-15%',
+    right: '15%',
+    width: '500px',
+    height: '500px',
+    borderRadius: '50%',
+    background: 'radial-gradient(circle, rgba(56, 189, 248, 0.08) 0%, transparent 70%)',
+    pointerEvents: 'none',
+    zIndex: 0,
   },
   themeToggleContainer: {
     position: 'absolute',
@@ -192,21 +216,24 @@ const styles = {
     maxWidth: '460px',
     background: 'var(--bg-card)',
     padding: '36px',
-    borderRadius: '16px',
-    boxShadow: 'var(--shadow-card)',
+    borderRadius: '20px',
+    boxShadow: 'var(--shadow-lg)',
     border: '1px solid var(--border-subtle)',
-    transition: 'background-color 0.2s ease, border-color 0.2s ease',
+    backdropFilter: 'blur(16px)',
+    position: 'relative',
+    zIndex: 1,
   },
   logoBadge: {
-    width: '48px',
-    height: '48px',
+    width: '56px',
+    height: '56px',
     margin: '0 auto 16px',
-    borderRadius: '12px',
-    background: 'var(--primary-subtle)',
-    border: '1px solid rgba(59, 130, 246, 0.25)',
+    borderRadius: '16px',
+    background: 'rgba(99, 102, 241, 0.12)',
+    border: '1px solid rgba(99, 102, 241, 0.25)',
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    boxShadow: '0 8px 20px -4px rgba(99, 102, 241, 0.25)',
   },
   title: {
     margin: '0 0 6px 0',
@@ -258,16 +285,17 @@ const styles = {
     transition: 'border-color 0.15s ease, background-color 0.2s ease',
   },
   button: {
-    padding: '12px',
-    borderRadius: '8px',
-    background: 'var(--primary)',
+    padding: '13px',
+    borderRadius: '12px',
+    background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
     border: 'none',
     color: '#ffffff',
     fontSize: '14px',
-    fontWeight: '600',
+    fontWeight: '700',
     cursor: 'pointer',
-    marginTop: '4px',
-    transition: 'background-color 0.15s ease',
+    marginTop: '6px',
+    boxShadow: '0 8px 20px -4px rgba(99, 102, 241, 0.4)',
+    transition: 'transform 0.15s ease, box-shadow 0.15s ease',
   },
   demoSection: {
     marginTop: '24px',

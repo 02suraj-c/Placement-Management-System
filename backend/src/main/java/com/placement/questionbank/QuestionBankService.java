@@ -42,7 +42,8 @@ public class QuestionBankService {
                 .questionType(req.getQuestionType())
                 .tags(req.getTags())
                 .yearAsked(req.getYearAsked())
-                .source(req.getSource() != null ? req.getSource() : "STUDENT_CONTRIBUTED")
+                .marks(req.getMarks() != null ? req.getMarks() : 10)
+                .source(req.getSource() != null ? req.getSource() : "MANUAL")
                 .createdBy(createdByUsername)
                 .build();
 
@@ -90,6 +91,9 @@ public class QuestionBankService {
         entity.setQuestionType(req.getQuestionType());
         entity.setTags(req.getTags());
         entity.setYearAsked(req.getYearAsked());
+        if (req.getMarks() != null) {
+            entity.setMarks(req.getMarks());
+        }
         if (req.getSource() != null) {
             entity.setSource(req.getSource());
         }

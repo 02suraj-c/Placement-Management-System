@@ -83,6 +83,7 @@ export default function AppRoutes() {
         }
       >
         <Route path="dashboard" element={<StudentDashboard />} />
+        <Route path="questions" element={<QuestionBank />} />
         <Route path="drives" element={<EligibleDrives />} />
         <Route path="applications" element={<Applications />} />
         <Route path="interviews" element={<Interviews />} />

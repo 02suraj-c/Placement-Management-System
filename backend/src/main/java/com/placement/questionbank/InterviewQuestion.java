@@ -92,6 +92,14 @@ public class InterviewQuestion {
     private Integer yearAsked;
 
     /**
+     * Weightage / Marks assigned to this question in assessments.
+     * Standard questions: 5-10 marks. Complex DSA questions: 25-50 marks.
+     */
+    @Column(name = "marks")
+    @Builder.Default
+    private Integer marks = 10;
+
+    /**
      * Source: "AI_GENERATED" | "MANUAL" | "STUDENT_CONTRIBUTED"
      */
     @Size(max = 50)

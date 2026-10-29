@@ -57,6 +57,7 @@ export default function Sidebar({ isOpen, onClose }) {
       default:
         return [
           { label: 'Dashboard', to: '/student/dashboard', icon: LayoutDashboard },
+          { label: 'Question Bank & DSA', to: '/student/questions', icon: BookOpen },
           { label: 'Eligible Drives', to: '/student/drives', icon: Briefcase },
           { label: 'My Applications', to: '/student/applications', icon: FileText },
           { label: 'Interviews Hub', to: '/student/interviews', icon: CalendarCheck },

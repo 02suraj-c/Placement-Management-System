@@ -55,8 +55,23 @@ export const authService = {
     return data.data;
   },
 
-  async register(name, email, password, role, year) {
-    const gradYear = parseInt(year || 2026, 10);
+  async register(registrationData, legacyEmail, legacyPassword, legacyRole) {
+    let payload = {};
+    if (typeof registrationData === 'object' && registrationData !== null) {
+      payload = { ...registrationData };
+    } else {
+      payload = {
+        name: registrationData,
+        email: legacyEmail,
+        password: legacyPassword,
+        role: legacyRole || 'ROLE_STUDENT',
+      };
+    }
+
+    const email = payload.email?.trim() || '';
+    const name = payload.name?.trim() || '';
+    const password = payload.password || '';
+    const role = payload.role || 'ROLE_STUDENT';
 
     if (isMockMode()) {
       const store = getMockStore();
@@ -67,23 +82,35 @@ export const authService = {
         throw new Error('An account with this email already exists.');
       }
 
-      const roll = `CS${gradYear}-${Math.floor(100 + Math.random() * 900)}`;
+      const rollNumber =
+        payload.rollNumber?.trim() ||
+        `ST${Math.floor(1000 + Math.random() * 9000)}`;
+
       const newUser = {
         id: Date.now(),
         name,
         email,
         password,
-        role: role || 'ROLE_STUDENT',
-        department: 'Computer Science & Engineering',
-        course: 'B.Tech',
-        graduationYear: gradYear,
-        passingYear: gradYear,
-        batch: String(gradYear),
-        cgpa: 8.5,
-        backlogs: 0,
-        rollNumber: roll,
-        enrollmentNumber: `EN${gradYear - 4}-${Math.floor(1000 + Math.random() * 9000)}`,
-        skills: ['Java', 'SQL', 'Web Development'],
+        role,
+        department: payload.department || 'Computer Science & Engineering',
+        course: payload.course || 'B.Tech',
+        studentYear: payload.studentYear || '4th Year',
+        currentSemester: payload.currentSemester ? Number(payload.currentSemester) : 7,
+        cgpa: payload.cgpa !== undefined && payload.cgpa !== '' ? Number(payload.cgpa) : 8.5,
+        backlogs: payload.activeBacklogs !== undefined && payload.activeBacklogs !== '' ? Number(payload.activeBacklogs) : 0,
+        activeBacklogs: payload.activeBacklogs !== undefined && payload.activeBacklogs !== '' ? Number(payload.activeBacklogs) : 0,
+        rollNumber,
+        enrollmentNumber: payload.enrollmentNumber || `ENR-${rollNumber}`,
+        batch: payload.graduationYear ? String(payload.graduationYear) : '2026',
+        graduationYear: payload.graduationYear ? Number(payload.graduationYear) : 2026,
+        phone: payload.phoneNumber || '+91 98765 43210',
+        phoneNumber: payload.phoneNumber || '+91 98765 43210',
+        address: payload.address || 'JECRC Campus, Jaipur, Rajasthan',
+        skills: Array.isArray(payload.skills)
+          ? payload.skills
+          : payload.skills
+          ? payload.skills.split(',').map((s) => s.trim()).filter(Boolean)
+          : ['Java', 'SQL', 'Web Development'],
       };
 
       store.users.push(newUser);
@@ -98,11 +125,16 @@ export const authService = {
         role: newUser.role,
         department: newUser.department,
         course: newUser.course,
-        graduationYear: newUser.graduationYear,
-        passingYear: newUser.passingYear,
+        studentYear: newUser.studentYear,
+        currentSemester: newUser.currentSemester,
         cgpa: newUser.cgpa,
         backlogs: newUser.backlogs,
         rollNumber: newUser.rollNumber,
+        enrollmentNumber: newUser.enrollmentNumber,
+        graduationYear: newUser.graduationYear,
+        phoneNumber: newUser.phoneNumber,
+        address: newUser.address,
+        skills: newUser.skills,
       };
 
       localStorage.setItem('auth_token', authData.token);
@@ -115,7 +147,7 @@ export const authService = {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ name, email, password, role, graduationYear: gradYear }),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
@@ -124,9 +156,8 @@ export const authService = {
     }
 
     if (data.data?.token) {
-      const userPayload = { ...data.data, graduationYear: gradYear, passingYear: gradYear };
       localStorage.setItem('auth_token', data.data.token);
-      localStorage.setItem('auth_user', JSON.stringify(userPayload));
+      localStorage.setItem('auth_user', JSON.stringify(data.data));
     }
     return data.data;
   },

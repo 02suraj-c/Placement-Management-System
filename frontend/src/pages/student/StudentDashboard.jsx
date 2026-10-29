@@ -13,6 +13,8 @@ import {
   Clock,
   Sparkles,
   TrendingUp,
+  BookOpen,
+  Flame,
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -128,12 +130,16 @@ export default function StudentDashboard() {
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <Link to="/student/drives" className="btn btn-primary">
+        <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+          <Link to="/student/questions" className="btn btn-primary" style={{ gap: '6px' }}>
+            <BookOpen size={16} />
+            <span>Question Bank & DSA</span>
+          </Link>
+          <Link to="/student/drives" className="btn btn-secondary">
             <Briefcase size={16} />
             <span>Browse Drives</span>
           </Link>
-          <Link to="/student/profile" className="btn btn-secondary">
+          <Link to="/student/profile" className="btn btn-outline">
             <span>View Profile</span>
           </Link>
         </div>

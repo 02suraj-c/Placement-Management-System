@@ -26,6 +26,7 @@ public class QuestionResponse {
     private InterviewQuestion.QuestionType questionType;
     private String tags;
     private Integer yearAsked;
+    private Integer marks;
     private String source;
     private String createdBy;
     private LocalDateTime createdAt;
@@ -44,6 +45,7 @@ public class QuestionResponse {
                 .questionType(q.getQuestionType())
                 .tags(q.getTags())
                 .yearAsked(q.getYearAsked())
+                .marks(q.getMarks() != null ? q.getMarks() : 10)
                 .source(q.getSource())
                 .createdBy(q.getCreatedBy())
                 .createdAt(q.getCreatedAt())

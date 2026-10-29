@@ -1,98 +1,102 @@
 /* Design Tokens and Theme System */
 :root, [data-theme="dark"] {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
-  /* Color Palette - Modern Deep Dark Theme */
-  --bg-main: #090d16;
-  --bg-surface: #0f172a;
-  --bg-card: #182234;
-  --bg-card-hover: #1e293b;
-  --bg-subtle: #243048;
+  /* Color Palette - Aesthetic & Soothing Deep Theme */
+  --bg-main: #0b0f19;
+  --bg-surface: #111827;
+  --bg-card: #151e30;
+  --bg-card-hover: #1c273e;
+  --bg-subtle: #1e293d;
   
   --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-focus: #3b82f6;
+  --border-focus: #6366f1;
   
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
   --text-muted: #64748b;
   
-  --primary: #3b82f6;
-  --primary-hover: #2563eb;
-  --primary-light: rgba(59, 130, 246, 0.15);
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
+  --primary-light: rgba(99, 102, 241, 0.14);
   
   --success: #10b981;
   --success-bg: rgba(16, 185, 129, 0.12);
   --warning: #f59e0b;
   --warning-bg: rgba(245, 158, 11, 0.12);
-  --danger: #ef4444;
-  --danger-bg: rgba(239, 68, 68, 0.12);
+  --danger: #f43f5e;
+  --danger-bg: rgba(244, 63, 94, 0.12);
   --info: #06b6d4;
   --info-bg: rgba(6, 182, 212, 0.12);
   --purple: #8b5cf6;
   --purple-bg: rgba(139, 92, 246, 0.12);
+  --accent-cyan: #38bdf8;
+  --accent-cyan-bg: rgba(56, 189, 248, 0.12);
 
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -4px rgba(0, 0, 0, 0.5);
-  --shadow-glow: 0 0 20px -5px rgba(59, 130, 246, 0.3);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 14px -2px rgba(0, 0, 0, 0.4), 0 2px 6px -1px rgba(0, 0, 0, 0.25);
+  --shadow-lg: 0 12px 28px -4px rgba(0, 0, 0, 0.5), 0 6px 12px -3px rgba(0, 0, 0, 0.35);
+  --shadow-glow: 0 0 24px -4px rgba(99, 102, 241, 0.35);
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 18px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
   --radius-full: 9999px;
 
   --sidebar-width: 260px;
   --header-height: 68px;
 
-  --navbar-bg: rgba(15, 23, 42, 0.88);
+  --navbar-bg: rgba(17, 24, 39, 0.85);
   --navbar-border: rgba(255, 255, 255, 0.08);
   --table-th-bg: #111a2c;
-  --table-hover-bg: rgba(255, 255, 255, 0.025);
-  --input-bg: #090d16;
+  --table-hover-bg: rgba(255, 255, 255, 0.03);
+  --input-bg: #0b0f19;
   --input-color: #f8fafc;
   --badge-border: rgba(255, 255, 255, 0.1);
-  --scrollbar-thumb: var(--bg-subtle);
-  --scrollbar-track: var(--bg-main);
+  --scrollbar-thumb: #243048;
+  --scrollbar-track: #0b0f19;
   --modal-overlay: rgba(0, 0, 0, 0.75);
 }
 
-/* Color Palette - Modern Executive Light Theme */
+/* Color Palette - Soothing Executive Light Theme */
 [data-theme="light"] {
   --bg-main: #f8fafc;
   --bg-surface: #ffffff;
   --bg-card: #ffffff;
   --bg-card-hover: #f1f5f9;
-  --bg-subtle: #f1f5f9;
+  --bg-subtle: #f8fafc;
   
   --border-subtle: #e2e8f0;
-  --border-focus: #2563eb;
+  --border-focus: #4f46e5;
   
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #64748b;
   
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: rgba(37, 99, 235, 0.08);
+  --primary: #4f46e5;
+  --primary-hover: #4338ca;
+  --primary-light: rgba(79, 70, 229, 0.08);
   
   --success: #059669;
-  --success-bg: rgba(16, 185, 129, 0.1);
+  --success-bg: rgba(16, 185, 129, 0.08);
   --warning: #d97706;
-  --warning-bg: rgba(245, 158, 11, 0.1);
-  --danger: #dc2626;
-  --danger-bg: rgba(239, 68, 68, 0.1);
+  --warning-bg: rgba(245, 158, 11, 0.08);
+  --danger: #e11d48;
+  --danger-bg: rgba(225, 29, 72, 0.08);
   --info: #0284c7;
-  --info-bg: rgba(6, 182, 212, 0.1);
+  --info-bg: rgba(6, 182, 212, 0.08);
   --purple: #7c3aed;
-  --purple-bg: rgba(139, 92, 246, 0.1);
+  --purple-bg: rgba(124, 58, 237, 0.08);
+  --accent-cyan: #0284c7;
+  --accent-cyan-bg: rgba(2, 132, 199, 0.08);
 
-  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.06), 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
-  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
-  --shadow-glow: 0 0 20px -5px rgba(37, 99, 235, 0.25);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 6px 16px -2px rgba(99, 102, 241, 0.06), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 14px 30px -4px rgba(99, 102, 241, 0.08), 0 4px 10px -2px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 24px -4px rgba(79, 70, 229, 0.2);
 
-  --navbar-bg: rgba(255, 255, 255, 0.94);
+  --navbar-bg: rgba(255, 255, 255, 0.92);
   --navbar-border: #e2e8f0;
   --table-th-bg: #f8fafc;
   --table-hover-bg: #f1f5f9;
@@ -121,12 +125,15 @@ html[data-theme="light"] {
 body {
   font-family: var(--font-sans);
   background-color: var(--bg-main);
+  background-image: 
+    radial-gradient(at 15% 15%, rgba(99, 102, 241, 0.04) 0px, transparent 55%),
+    radial-gradient(at 85% 85%, rgba(56, 189, 248, 0.03) 0px, transparent 55%);
   color: var(--text-primary);
-  line-height: 1.5;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   min-height: 100vh;
   overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 /* Global Subtle Transitions for Theme Elements */

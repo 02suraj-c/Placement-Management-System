@@ -23,8 +23,8 @@ import org.springframework.web.multipart.MultipartFile;
  * ├─────────────────────────────────────────────────────────────────────────┤
  * │ POST /resume/analyze              │ All authenticated                   │
  * │ POST /interview/generate          │ All authenticated                   │
- * │ POST /interview/generate-and-save │ TPO, DEPUTY_TPO, COORDINATOR,       │
- * │                                   │ FACULTY                             │
+ * │ POST /interview/generate-and-save │ FACULTY, OFFICER, PLACEMENT_OFFICER,│
+ * │                                   │ ADMIN                               │
  * │ POST /preparation/plan            │ All authenticated                   │
  * └─────────────────────────────────────────────────────────────────────────┘
  *
@@ -98,10 +98,10 @@ public class AIController {
     // Same body as /generate but forcibly sets saveToBank=true.
     // Returns savedQuestionIds in the response.
     //
-    // Roles: TPO, DEPUTY_TPO, COORDINATOR, FACULTY
+    // Roles: FACULTY, OFFICER, PLACEMENT_OFFICER, ADMIN
     // ─────────────────────────────────────────────────────────────────────────
     @PostMapping("/interview/generate-and-save")
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO','COORDINATOR','FACULTY')")
+    @PreAuthorize("hasAnyRole('FACULTY','OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<InterviewGenerationResponse> generateAndSaveQuestions(
             @Valid @RequestBody InterviewGenerationRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {

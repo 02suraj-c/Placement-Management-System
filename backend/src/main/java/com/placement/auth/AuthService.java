@@ -8,6 +8,7 @@ import com.placement.exception.ResourceNotFoundException;
 import com.placement.security.JwtService;
 import com.placement.user.User;
 import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import com.placement.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Locale;
 
 @Service
 @RequiredArgsConstructor
@@ -30,15 +33,17 @@ public class AuthService {
 
     @Transactional
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalArgumentException("Email already in use: " + request.getEmail());
+        String normalizedEmail = normalizeEmail(request.getEmail());
+
+        if (userRepository.existsByEmail(normalizedEmail)) {
+            throw new IllegalArgumentException("Email already in use: " + normalizedEmail);
         }
 
         User user = User.builder()
                 .name(request.getName())
-                .email(request.getEmail().trim().toLowerCase())
+                .email(normalizedEmail)
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(request.getRole())
+                .role(UserRole.ROLE_STUDENT)
                 .enabled(true)
                 .build();
 
@@ -56,7 +61,7 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        String cleanEmail = request.getEmail().trim().toLowerCase();
+        String cleanEmail = normalizeEmail(request.getEmail());
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(cleanEmail, request.getPassword())
@@ -82,9 +87,13 @@ public class AuthService {
         if (authentication == null || !authentication.isAuthenticated()) {
             throw new ResourceNotFoundException("No authenticated user found in session");
         }
-        String email = authentication.getName();
+        String email = normalizeEmail(authentication.getName());
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "email", email));
         return userService.mapToResponse(user);
+    }
+
+    private String normalizeEmail(String email) {
+        return email != null ? email.trim().toLowerCase(Locale.ROOT) : null;
     }
 }

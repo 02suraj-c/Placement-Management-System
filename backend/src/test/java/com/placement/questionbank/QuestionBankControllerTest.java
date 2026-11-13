@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * TC-QC-02  GET  /api/questions/{id}     unauthenticated → 401/403
  * TC-QC-03  POST /api/questions          FACULTY         → 201
  * TC-QC-04  POST /api/questions          STUDENT         → 403
- * TC-QC-05  DELETE /api/questions/{id}   DEPUTY_TPO      → 204
+ * TC-QC-05  DELETE /api/questions/{id}   OFFICER         → 204
  * TC-QC-06  GET  /api/questions/{id}     unknown id      → 404
  */
 @WebMvcTest(QuestionBankController.class)
@@ -133,9 +133,9 @@ class QuestionBankControllerTest {
 
     // ── TC-QC-05 ──────────────────────────────────────────────────────────────
     @Test
-    @WithMockUser(roles = "DEPUTY_TPO")
-    @DisplayName("TC-QC-05: DEPUTY_TPO DELETE /api/questions/1 → 204 No Content")
-    void delete_deputyTpo_returns204() throws Exception {
+    @WithMockUser(roles = "OFFICER")
+    @DisplayName("TC-QC-05: OFFICER DELETE /api/questions/1 → 204 No Content")
+    void delete_officer_returns204() throws Exception {
         doNothing().when(questionBankService).delete(1L);
 
         mockMvc.perform(delete("/api/questions/1").with(csrf()))

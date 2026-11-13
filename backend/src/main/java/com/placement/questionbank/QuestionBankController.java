@@ -23,8 +23,9 @@ import java.util.List;
  *
  * Base path: /api/questions
  *
- * Write roles: TPO, DEPUTY_TPO, COORDINATOR, FACULTY
- * Read roles:  all authenticated users (STUDENT, FACULTY, HOD, TPO, DEPUTY_TPO, COORDINATOR)
+ * Write roles: FACULTY, OFFICER, PLACEMENT_OFFICER, ADMIN
+ * Delete roles: OFFICER, PLACEMENT_OFFICER, ADMIN
+ * Read roles:  all authenticated users
  */
 @RestController
 @RequestMapping("/api/questions")
@@ -37,7 +38,7 @@ public class QuestionBankController {
     // POST /api/questions  — create a new question
     // ─────────────────────────────────────────────────────────────────────────
     @PostMapping
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO','COORDINATOR','FACULTY')")
+    @PreAuthorize("hasAnyRole('FACULTY','OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<QuestionResponse> create(
             @Valid @RequestBody QuestionRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -99,7 +100,7 @@ public class QuestionBankController {
     // PUT /api/questions/{id}  — full update
     // ─────────────────────────────────────────────────────────────────────────
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO','COORDINATOR','FACULTY')")
+    @PreAuthorize("hasAnyRole('FACULTY','OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<QuestionResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody QuestionRequest request,
@@ -110,10 +111,10 @@ public class QuestionBankController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // DELETE /api/questions/{id}  — delete (TPO / DEPUTY_TPO only)
+    // DELETE /api/questions/{id}  — delete (OFFICER, PLACEMENT_OFFICER, ADMIN only)
     // ─────────────────────────────────────────────────────────────────────────
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         questionBankService.delete(id);
         return ResponseEntity.noContent().build();

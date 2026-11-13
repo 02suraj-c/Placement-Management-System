@@ -17,8 +17,8 @@ import java.util.List;
  *
  * Security:
  *   - Read operations   : isAuthenticated()
- *   - Create/Update     : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')
- *   - Delete            : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO')
+ *   - Create/Update     : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')
+ *   - Delete            : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')
  */
 @RestController
 @RequestMapping("/api/placement-drives")
@@ -34,7 +34,7 @@ public class PlacementController {
     // POST /api/placement-drives
     // =========================================================================
     @PostMapping
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<PlacementDrive> createPlacementDrive(
             @Valid @RequestBody PlacementDrive placementDrive) {
 
@@ -66,7 +66,7 @@ public class PlacementController {
     // PUT /api/placement-drives/{id}
     // =========================================================================
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<PlacementDrive> updatePlacementDrive(
             @PathVariable Long id,
             @Valid @RequestBody PlacementDrive placementDrive) {
@@ -79,7 +79,7 @@ public class PlacementController {
     // DELETE /api/placement-drives/{id}
     // =========================================================================
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<Void> deletePlacementDrive(@PathVariable Long id) {
         placementService.deletePlacementDrive(id);
         return ResponseEntity.noContent().build();

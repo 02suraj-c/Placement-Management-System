@@ -17,8 +17,8 @@ import java.util.List;
  *
  * Security:
  *   - Read operations   : isAuthenticated()
- *   - Create/Update     : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')
- *   - Delete            : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO')
+ *   - Create/Update     : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')
+ *   - Delete            : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')
  */
 @RestController
 @RequestMapping("/api/companies")
@@ -34,7 +34,7 @@ public class CompanyController {
     // POST /api/companies
     // =========================================================================
     @PostMapping
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<Company> createCompany(@Valid @RequestBody Company company) {
         Company created = companyService.createCompany(company);
         return ResponseEntity.status(HttpStatus.CREATED).body(created);
@@ -83,7 +83,7 @@ public class CompanyController {
     // PUT /api/companies/{id}
     // =========================================================================
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<Company> updateCompany(
             @PathVariable Long id,
             @Valid @RequestBody Company company) {
@@ -96,7 +96,7 @@ public class CompanyController {
     // DELETE /api/companies/{id}
     // =========================================================================
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN')")
     public ResponseEntity<Void> deleteCompany(@PathVariable Long id) {
         companyService.deleteCompany(id);
         return ResponseEntity.noContent().build();

@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * TC-AC-02  POST /resume/analyze  unauthenticated → 401/403
  * TC-AC-03  POST /interview/generate  missing required field → 400 validation error
  * TC-AC-04  POST /interview/generate-and-save  STUDENT role → 403 forbidden
- * TC-AC-05  POST /interview/generate-and-save  TPO role → 201 + savedQuestionIds
+ * TC-AC-05  POST /interview/generate-and-save  OFFICER role → 201 + savedQuestionIds
  * TC-AC-06  POST /preparation/plan  driveDate in past → 400 validation error
  * TC-AC-07  POST /preparation/plan  AI timeout → 504 Gateway Timeout
  * TC-AC-08  POST /resume/analyze  file > 5MB (extractor throws) → 400
@@ -214,9 +214,9 @@ class AIControllerTest {
 
     // ── TC-AC-05 ───────────────────────────────────────────────────────────────
     @Test
-    @WithMockUser(username = "tpo@college.edu", roles = "TPO")
-    @DisplayName("TC-AC-05: TPO hits /generate-and-save → 201 + savedQuestionIds")
-    void generateAndSave_tpoRole_returns201WithIds() throws Exception {
+    @WithMockUser(username = "officer@college.edu", roles = "OFFICER")
+    @DisplayName("TC-AC-05: OFFICER hits /generate-and-save → 201 + savedQuestionIds")
+    void generateAndSave_officerRole_returns201WithIds() throws Exception {
         when(interviewGenerator.generate(any(), anyString()))
                 .thenReturn(goodGenerationResponse(true));
 

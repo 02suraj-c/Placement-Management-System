@@ -26,6 +26,7 @@ public class StudentProfileResponse {
     private String department;
     private String course;
     private Integer currentSemester;
+    private Integer academicYear;
     private Double cgpa;
     private Integer graduationYear;
     private String phoneNumber;

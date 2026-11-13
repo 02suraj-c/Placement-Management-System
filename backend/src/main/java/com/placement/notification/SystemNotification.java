@@ -19,8 +19,11 @@ public class SystemNotification {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "student_id", nullable = false)
+    @Column(name = "student_id")
     private Long studentId;
+
+    @Column(name = "target_years", length = 100)
+    private String targetYears;
 
     @Column(name = "message", nullable = false, length = 1000)
     private String message;
@@ -39,6 +42,13 @@ public class SystemNotification {
 
     public SystemNotification(Long studentId, String message) {
         this.studentId = studentId;
+        this.message = message;
+        this.isRead = false;
+    }
+
+    public SystemNotification(Long studentId, String targetYears, String message) {
+        this.studentId = studentId;
+        this.targetYears = targetYears;
         this.message = message;
         this.isRead = false;
     }
@@ -71,6 +81,14 @@ public class SystemNotification {
 
     public void setStudentId(Long studentId) {
         this.studentId = studentId;
+    }
+
+    public String getTargetYears() {
+        return targetYears;
+    }
+
+    public void setTargetYears(String targetYears) {
+        this.targetYears = targetYears;
     }
 
     public String getMessage() {

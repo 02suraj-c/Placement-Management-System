@@ -3,6 +3,7 @@ package com.placement.placement;
 import com.placement.company.Company;
 import com.placement.company.CompanyRepository;
 import com.placement.exception.ResourceNotFoundException;
+import com.placement.util.YearUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +13,6 @@ import java.util.List;
  * Service layer for Placement Drive management.
  *
  * Package  : com.placement.placement
- * Owner    : Person 3
  */
 @Service
 @Transactional
@@ -66,6 +66,20 @@ public class PlacementService {
     }
 
     /**
+     * Retrieves all placement drives eligible for a specific academic year (1-4).
+     */
+    @Transactional(readOnly = true)
+    public List<PlacementDrive> getDrivesForYear(Integer year) {
+        List<PlacementDrive> all = placementRepository.findAll();
+        if (year == null || year <= 0) {
+            return all;
+        }
+        return all.stream()
+                .filter(drive -> YearUtils.matchesYear(drive.getTargetYears(), year))
+                .toList();
+    }
+
+    /**
      * Retrieves a single placement drive by ID.
      */
     @Transactional(readOnly = true)
@@ -101,6 +115,7 @@ public class PlacementService {
         existing.setMinimumCgpa(updatedDrive.getMinimumCgpa() != null ? updatedDrive.getMinimumCgpa() : 0.0);
         existing.setMaximumAllowedBacklogs(updatedDrive.getMaximumAllowedBacklogs() != null ? updatedDrive.getMaximumAllowedBacklogs() : 0);
         existing.setEligibleBranches(updatedDrive.getEligibleBranches());
+        existing.setTargetYears(updatedDrive.getTargetYears());
 
         if (updatedDrive.getStatus() != null) {
             existing.setStatus(updatedDrive.getStatus());
@@ -140,46 +155,37 @@ public class PlacementService {
      * Searches drives by job title keyword.
      */
     @Transactional(readOnly = true)
-    public List<PlacementDrive> searchDrivesByJobTitle(String jobTitle) {
-        if (jobTitle == null || jobTitle.trim().isEmpty()) {
-            return placementRepository.findAll();
-        }
-        return placementRepository.findByJobTitleContainingIgnoreCase(jobTitle.trim());
+    public List<PlacementDrive> searchDrivesByTitle(String keyword) {
+        return placementRepository.findByJobTitleContainingIgnoreCase(keyword);
     }
 
+    @Transactional(readOnly = true)
+    public List<PlacementDrive> searchDrivesByJobTitle(String jobTitle) {
+        return searchDrivesByTitle(jobTitle);
+    }
+
+    /**
+     * Enforces domain business rules:
+     *  - applicationEndDate must be after or equal to applicationStartDate
+     *  - driveDate must be on or after applicationEndDate
+     */
     private void validateDriveBusinessRules(PlacementDrive drive) {
         if (drive.getApplicationStartDate() != null && drive.getApplicationEndDate() != null) {
-            if (drive.getApplicationStartDate().isAfter(drive.getApplicationEndDate())) {
-                throw new IllegalArgumentException(
-                        "Application start date (" + drive.getApplicationStartDate() +
-                                ") cannot be after application end date (" + drive.getApplicationEndDate() + ")."
-                );
-            }
-        }
-
-        if (drive.getApplicationEndDate() != null && drive.getDriveDate() != null) {
-            if (drive.getApplicationEndDate().isAfter(drive.getDriveDate())) {
+            if (drive.getApplicationEndDate().isBefore(drive.getApplicationStartDate())) {
                 throw new IllegalArgumentException(
                         "Application end date (" + drive.getApplicationEndDate() +
-                                ") cannot be after drive date (" + drive.getDriveDate() + ")."
+                        ") must be on or after application start date (" + drive.getApplicationStartDate() + ")."
                 );
             }
         }
 
-        if (drive.getSalaryPackage() != null && drive.getSalaryPackage() <= 0) {
-            throw new IllegalArgumentException("Salary package must be positive.");
-        }
-
-        if (drive.getVacancies() != null && drive.getVacancies() <= 0) {
-            throw new IllegalArgumentException("Vacancies count must be positive.");
-        }
-
-        if (drive.getMinimumCgpa() != null && (drive.getMinimumCgpa() < 0.0 || drive.getMinimumCgpa() > 10.0)) {
-            throw new IllegalArgumentException("Minimum CGPA must be between 0.0 and 10.0.");
-        }
-
-        if (drive.getMaximumAllowedBacklogs() != null && drive.getMaximumAllowedBacklogs() < 0) {
-            throw new IllegalArgumentException("Maximum allowed backlogs cannot be negative.");
+        if (drive.getDriveDate() != null && drive.getApplicationEndDate() != null) {
+            if (drive.getDriveDate().isBefore(drive.getApplicationEndDate())) {
+                throw new IllegalArgumentException(
+                        "Drive date (" + drive.getDriveDate() +
+                        ") must be on or after application end date (" + drive.getApplicationEndDate() + ")."
+                );
+            }
         }
     }
 }

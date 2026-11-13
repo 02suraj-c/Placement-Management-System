@@ -23,12 +23,14 @@ public class HackathonResponse {
     private HackathonMode mode;
     private String location;
     private String eligibilityCriteria;
+    private String targetYears;
     private String registrationUrl;
     private HackathonStatus status;
     private boolean active;
     private boolean registrationOpen;
     private long registeredCount;
     private String postedBy;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }

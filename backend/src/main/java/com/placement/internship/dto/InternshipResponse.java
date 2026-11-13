@@ -20,6 +20,7 @@ public class InternshipResponse {
     private String stipend;
     private String duration;
     private String eligibilityCriteria;
+    private String targetYears;
     private LocalDate applicationDeadline;
     private String applicationUrl;
     private boolean active;

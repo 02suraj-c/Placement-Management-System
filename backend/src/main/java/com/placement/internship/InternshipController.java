@@ -3,8 +3,15 @@ package com.placement.internship;
 import com.placement.dto.ApiResponse;
 import com.placement.internship.dto.InternshipRequest;
 import com.placement.internship.dto.InternshipResponse;
+import com.placement.student.Student;
+import com.placement.student.StudentRepository;
+import com.placement.user.User;
+import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,18 +27,32 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/internships")
-@RequiredArgsConstructor
 public class InternshipController {
 
     private final InternshipService internshipService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+
+    @Autowired
+    public InternshipController(InternshipService internshipService,
+                                UserRepository userRepository,
+                                StudentRepository studentRepository) {
+        this.internshipService = internshipService;
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+    }
+
+    public InternshipController(InternshipService internshipService) {
+        this(internshipService, null, null);
+    }
 
     /**
      * Create a new internship listing.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
+     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY, TPO, DEPUTY_TPO, COORDINATOR.
      * POST /api/internships
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<InternshipResponse>> createInternship(
             @Valid @RequestBody InternshipRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -43,25 +64,37 @@ public class InternshipController {
 
     /**
      * Get all active internship listings for students and staff.
-     * GET /api/internships?keyword=&location=
+     * If user is student, strictly filtered to their academic year!
+     * GET /api/internships?keyword=&location=&year=
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<InternshipResponse>>> getActiveInternships(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String location) {
+            @RequestParam(required = false) String location,
+            @RequestParam(required = false) Integer year,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<InternshipResponse> response = internshipService.getAllActiveInternships(keyword, location);
+        Integer effectiveYear = year;
+        if (userDetails != null && userDetails.getUsername() != null) {
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null && user.getRole() == UserRole.ROLE_STUDENT) {
+                Student student = studentRepository.findByUserEmail(email).orElse(null);
+                effectiveYear = (student != null) ? student.getAcademicYear() : 1;
+            }
+        }
+
+        List<InternshipResponse> response = internshipService.getAllActiveInternships(keyword, location, effectiveYear);
         return ResponseEntity.ok(ApiResponse.success(response, "Active internships fetched successfully"));
     }
 
     /**
      * Get all internship listings (both active and inactive) for management.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * GET /api/internships/all
      */
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<List<InternshipResponse>>> getAllInternships() {
         List<InternshipResponse> response = internshipService.getAllInternships();
         return ResponseEntity.ok(ApiResponse.success(response, "All internships fetched successfully"));
@@ -69,7 +102,6 @@ public class InternshipController {
 
     /**
      * Get a specific internship by ID.
-     * Accessible by all authenticated users (students and staff).
      * GET /api/internships/{id}
      */
     @GetMapping("/{id}")
@@ -81,11 +113,10 @@ public class InternshipController {
 
     /**
      * Update an existing internship listing.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * PUT /api/internships/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<InternshipResponse>> updateInternship(
             @PathVariable Long id,
             @Valid @RequestBody InternshipRequest request,
@@ -98,11 +129,10 @@ public class InternshipController {
 
     /**
      * Delete an existing internship listing.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * DELETE /api/internships/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO')")
     public ResponseEntity<ApiResponse<Void>> deleteInternship(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {

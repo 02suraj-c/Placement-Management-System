@@ -3,6 +3,11 @@ package com.placement.questionbank;
 import com.placement.questionbank.dto.QuestionFilterRequest;
 import com.placement.questionbank.dto.QuestionRequest;
 import com.placement.questionbank.dto.QuestionResponse;
+import com.placement.student.Student;
+import com.placement.student.StudentRepository;
+import com.placement.user.User;
+import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -22,9 +27,6 @@ import java.util.List;
  * REST controller for the Interview Question Bank.
  *
  * Base path: /api/questions
- *
- * Write roles: TPO, DEPUTY_TPO, COORDINATOR, FACULTY
- * Read roles:  all authenticated users (STUDENT, FACULTY, HOD, TPO, DEPUTY_TPO, COORDINATOR)
  */
 @RestController
 @RequestMapping("/api/questions")
@@ -32,6 +34,8 @@ import java.util.List;
 public class QuestionBankController {
 
     private final QuestionBankService questionBankService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
 
     // ─────────────────────────────────────────────────────────────────────────
     // POST /api/questions  — create a new question (STUDENT, OFFICER, FACULTY, ADMIN)
@@ -57,10 +61,6 @@ public class QuestionBankController {
 
     // ─────────────────────────────────────────────────────────────────────────
     // GET /api/questions  — paginated + filtered list (all roles)
-    //
-    // Query params (all optional):
-    //   company, topic, targetRole, difficulty, questionType, keyword, yearAsked
-    //   page (0-indexed, default 0), size (default 20), sort (default createdAt,desc)
     // ─────────────────────────────────────────────────────────────────────────
     @GetMapping
     @PreAuthorize("isAuthenticated()")
@@ -72,15 +72,29 @@ public class QuestionBankController {
             @RequestParam(required = false) InterviewQuestion.QuestionType questionType,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer yearAsked,
+            @RequestParam(required = false) Integer targetYear,
             @RequestParam(defaultValue = "0")  int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortDir) {
+            @RequestParam(defaultValue = "desc") String sortDir,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
         Sort sort = sortDir.equalsIgnoreCase("asc")
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageable = PageRequest.of(page, size, sort);
+
+        Integer effectiveTargetYear = targetYear;
+
+        // If authenticated user is a student, enforce their academic year!
+        if (userDetails != null && userDetails.getUsername() != null) {
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null && user.getRole() == UserRole.ROLE_STUDENT) {
+                Student student = studentRepository.findByUserEmail(email).orElse(null);
+                effectiveTargetYear = (student != null) ? student.getAcademicYear() : 1;
+            }
+        }
 
         QuestionFilterRequest filter = QuestionFilterRequest.builder()
                 .company(company)
@@ -90,6 +104,7 @@ public class QuestionBankController {
                 .questionType(questionType)
                 .keyword(keyword)
                 .yearAsked(yearAsked)
+                .targetYear(effectiveTargetYear)
                 .build();
 
         return ResponseEntity.ok(questionBankService.filter(filter, pageable));
@@ -99,39 +114,41 @@ public class QuestionBankController {
     // PUT /api/questions/{id}  — full update
     // ─────────────────────────────────────────────────────────────────────────
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO','COORDINATOR','FACULTY')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR','FACULTY','HOD')")
     public ResponseEntity<QuestionResponse> update(
             @PathVariable Long id,
             @Valid @RequestBody QuestionRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        return ResponseEntity.ok(
-                questionBankService.update(id, request, userDetails.getUsername()));
+        QuestionResponse response = questionBankService.update(id, request, userDetails.getUsername());
+        return ResponseEntity.ok(response);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // DELETE /api/questions/{id}  — delete (TPO / DEPUTY_TPO only)
+    // DELETE /api/questions/{id}
     // ─────────────────────────────────────────────────────────────────────────
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('TPO','DEPUTY_TPO')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','FACULTY','HOD')")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         questionBankService.delete(id);
         return ResponseEntity.noContent().build();
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    // GET /api/questions/meta/companies  — distinct company list
-    // GET /api/questions/meta/topics     — distinct topic list
+    // GET /api/questions/companies  — distinct companies for autocomplete
     // ─────────────────────────────────────────────────────────────────────────
-    @GetMapping("/meta/companies")
+    @GetMapping("/companies")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<String>> getCompanies() {
+    public ResponseEntity<List<String>> getDistinctCompanies() {
         return ResponseEntity.ok(questionBankService.getDistinctCompanies());
     }
 
-    @GetMapping("/meta/topics")
+    // ─────────────────────────────────────────────────────────────────────────
+    // GET /api/questions/topics  — distinct topics for autocomplete
+    // ─────────────────────────────────────────────────────────────────────────
+    @GetMapping("/topics")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<String>> getTopics() {
+    public ResponseEntity<List<String>> getDistinctTopics() {
         return ResponseEntity.ok(questionBankService.getDistinctTopics());
     }
 }

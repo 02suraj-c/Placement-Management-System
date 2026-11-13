@@ -8,6 +8,7 @@ import java.util.List;
 @Repository
 public interface HackathonRegistrationRepository extends JpaRepository<HackathonRegistration, Long> {
 
+    // Basic lookup methods
     List<HackathonRegistration> findByHackathonId(Long hackathonId);
 
     List<HackathonRegistration> findByStudentIdOrderByRegisteredAtDesc(Long studentId);
@@ -15,4 +16,9 @@ public interface HackathonRegistrationRepository extends JpaRepository<Hackathon
     boolean existsByHackathonIdAndStudentId(Long hackathonId, Long studentId);
 
     long countByHackathonId(Long hackathonId);
+
+    // Helper methods used by the service
+    void deleteByHackathonId(Long hackathonId);
+
+    List<HackathonRegistration> findByHackathonIdOrderByRegisteredAtDesc(Long hackathonId);
 }

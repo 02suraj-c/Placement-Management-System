@@ -11,4 +11,12 @@ public interface NotificationRepository extends JpaRepository<SystemNotification
     List<SystemNotification> findByStudentId(Long studentId);
 
     List<SystemNotification> findByStudentIdOrderByCreatedAtDesc(Long studentId);
+
+    List<SystemNotification> findByStudentIdIsNullOrderByCreatedAtDesc();
+
+    List<SystemNotification> findAllByOrderByCreatedAtDesc();
+
+    long countByStudentIdAndIsReadFalse(Long studentId);
+
+    List<SystemNotification> findByStudentIdAndIsReadFalse(Long studentId);
 }

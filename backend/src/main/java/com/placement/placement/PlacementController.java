@@ -1,9 +1,17 @@
 package com.placement.placement;
 
+import com.placement.student.Student;
+import com.placement.student.StudentRepository;
+import com.placement.user.User;
+import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,28 +21,33 @@ import java.util.List;
  *
  * Base Path: /api/placement-drives
  * Package  : com.placement.placement
- * Owner    : Person 3
- *
- * Security:
- *   - Read operations   : isAuthenticated()
- *   - Create/Update     : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')
- *   - Delete            : hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO')
  */
 @RestController
 @RequestMapping("/api/placement-drives")
 public class PlacementController {
 
     private final PlacementService placementService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
 
     public PlacementController(PlacementService placementService) {
+        this(placementService, null, null);
+    }
+
+    @Autowired
+    public PlacementController(PlacementService placementService,
+                               UserRepository userRepository,
+                               StudentRepository studentRepository) {
         this.placementService = placementService;
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
     }
 
     // =========================================================================
     // POST /api/placement-drives
     // =========================================================================
     @PostMapping
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR','FACULTY','HOD')")
     public ResponseEntity<PlacementDrive> createPlacementDrive(
             @Valid @RequestBody PlacementDrive placementDrive) {
 
@@ -47,7 +60,27 @@ public class PlacementController {
     // =========================================================================
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<PlacementDrive>> getAllPlacementDrives() {
+    public ResponseEntity<List<PlacementDrive>> getAllPlacementDrives(
+            @RequestParam(required = false) Integer year,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        if (userDetails != null) {
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null && user.getRole() == UserRole.ROLE_STUDENT) {
+                // Students can ONLY see drives targeting their own academic year.
+                // Any 'year' parameter passed from client is ignored and overridden.
+                Student student = studentRepository.findByUserEmail(email).orElse(null);
+                int studentYear = (student != null) ? student.getAcademicYear() : 1;
+                return ResponseEntity.ok(placementService.getDrivesForYear(studentYear));
+            }
+        }
+
+        // Faculty/Staff can filter by year or view all
+        if (year != null && year > 0) {
+            return ResponseEntity.ok(placementService.getDrivesForYear(year));
+        }
+
         List<PlacementDrive> drives = placementService.getAllPlacementDrives();
         return ResponseEntity.ok(drives);
     }
@@ -66,7 +99,7 @@ public class PlacementController {
     // PUT /api/placement-drives/{id}
     // =========================================================================
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR')")
+    @PreAuthorize("hasAnyRole('OFFICER','PLACEMENT_OFFICER','ADMIN','TPO','DEPUTY_TPO','COORDINATOR','FACULTY','HOD')")
     public ResponseEntity<PlacementDrive> updatePlacementDrive(
             @PathVariable Long id,
             @Valid @RequestBody PlacementDrive placementDrive) {
@@ -106,14 +139,12 @@ public class PlacementController {
     }
 
     // =========================================================================
-    // GET /api/placement-drives/search?jobTitle={jobTitle}
+    // GET /api/placement-drives/search?keyword=
     // =========================================================================
     @GetMapping("/search")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<PlacementDrive>> searchDrivesByJobTitle(
-            @RequestParam(required = false, defaultValue = "") String jobTitle) {
-
-        List<PlacementDrive> drives = placementService.searchDrivesByJobTitle(jobTitle);
+    public ResponseEntity<List<PlacementDrive>> searchDrives(@RequestParam String keyword) {
+        List<PlacementDrive> drives = placementService.searchDrivesByTitle(keyword);
         return ResponseEntity.ok(drives);
     }
 }

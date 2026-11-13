@@ -19,4 +19,10 @@ public class UserResponse {
     private UserRole role;
     private boolean enabled;
     private LocalDateTime createdAt;
+
+    // Student profile session fields
+    private Integer year;
+    private Integer semester;
+    private String rollNumber;
+    private String department;
 }

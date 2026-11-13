@@ -18,4 +18,10 @@ public class AuthResponse {
     private String name;
     private String email;
     private UserRole role;
+
+    // Student academic session fields
+    private Integer year;
+    private Integer semester;
+    private String rollNumber;
+    private String department;
 }

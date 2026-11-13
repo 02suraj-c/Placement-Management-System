@@ -1,6 +1,7 @@
 package com.placement.attendance;
 
 import com.placement.student.Student;
+import com.placement.util.YearUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +33,12 @@ public class ClassAttendance {
     @Column(name = "subject", nullable = false, length = 100)
     private String subject;
 
+    @Column(name = "academic_year")
+    private Integer academicYear;
+
+    @Column(name = "semester")
+    private Integer semester;
+
     @Column(name = "attendance_date", nullable = false)
     private LocalDate attendanceDate;
 
@@ -50,5 +57,13 @@ public class ClassAttendance {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        if (this.student != null) {
+            if (this.semester == null) {
+                this.semester = this.student.getCurrentSemester();
+            }
+            if (this.academicYear == null) {
+                this.academicYear = this.student.getAcademicYear();
+            }
+        }
     }
 }

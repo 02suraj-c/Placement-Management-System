@@ -25,6 +25,7 @@ public class QuestionResponse {
     private InterviewQuestion.Difficulty difficulty;
     private InterviewQuestion.QuestionType questionType;
     private String tags;
+    private String targetYears;
     private Integer yearAsked;
     private Integer marks;
     private String source;
@@ -44,6 +45,7 @@ public class QuestionResponse {
                 .difficulty(q.getDifficulty())
                 .questionType(q.getQuestionType())
                 .tags(q.getTags())
+                .targetYears(q.getTargetYears())
                 .yearAsked(q.getYearAsked())
                 .marks(q.getMarks() != null ? q.getMarks() : 10)
                 .source(q.getSource())

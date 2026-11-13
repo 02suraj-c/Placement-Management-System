@@ -20,6 +20,8 @@ public class AttendanceRecordResponse {
     private Long studentId;
     private String studentName;
     private String rollNumber;
+    private Integer academicYear;
+    private Integer semester;
     private String type; // CLASS or CRT
     private String title; // Subject or Session Name
     private LocalDate date;

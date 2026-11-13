@@ -61,7 +61,7 @@ export default function Sidebar({ isOpen, onClose }) {
           { label: 'Eligible Drives', to: '/student/drives', icon: Briefcase },
           { label: 'My Applications', to: '/student/applications', icon: FileText },
           { label: 'Interviews Hub', to: '/student/interviews', icon: CalendarCheck },
-          { label: 'Interview Questions', to: '/student/questions', icon: BookOpen },
+          { label: 'Interview Questions', to: '/student/company-questions', icon: Building2 },
           { label: 'Notifications', to: '/student/notifications', icon: Bell },
           { label: 'Profile & Resume', to: '/student/profile', icon: User },
         ];

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { studentService } from '../../services/studentService';
 import { resumeService } from '../../services/resumeService';
+import { atsService } from '../../services/atsService';
 import {
   User,
   GraduationCap,
@@ -22,6 +23,11 @@ import {
   BookOpen,
   Calendar,
   Sparkles,
+  Linkedin,
+  Github,
+  Globe,
+  ExternalLink,
+  Briefcase,
 } from 'lucide-react';
 
 export default function StudentProfile() {
@@ -47,6 +53,9 @@ export default function StudentProfile() {
     totalBacklogs: '0',
     phoneNumber: '',
     skills: '',
+    linkedinUrl: '',
+    githubUrl: '',
+    preferredDomain: 'Software Development & Engineering',
     // Initial profile creation fields
     rollNumber: '',
     enrollmentNumber: '',
@@ -61,10 +70,34 @@ export default function StudentProfile() {
   const [resumeError, setResumeError] = useState(null);
   const [resumeSuccess, setResumeSuccess] = useState(null);
 
+  // ATS Score State
+  const [atsData, setAtsData] = useState(null);
+  const [loadingAts, setLoadingAts] = useState(false);
+
   useEffect(() => {
     loadProfile();
     loadResume();
   }, []);
+
+  useEffect(() => {
+    if (resume && profile) {
+      loadAtsScore(profile, resume);
+    } else {
+      setAtsData(null);
+    }
+  }, [resume, profile]);
+
+  const loadAtsScore = async (prof, res) => {
+    try {
+      setLoadingAts(true);
+      const score = await atsService.calculateGenericAts(prof, res);
+      setAtsData(score);
+    } catch (e) {
+      console.warn('Failed to calculate ATS score:', e);
+    } finally {
+      setLoadingAts(false);
+    }
+  };
 
   const loadResume = async () => {
     try {
@@ -111,6 +144,9 @@ export default function StudentProfile() {
       totalBacklogs: data.totalBacklogs !== undefined && data.totalBacklogs !== null ? String(data.totalBacklogs) : '0',
       phoneNumber: data.phoneNumber || '',
       skills: data.skills || '',
+      linkedinUrl: data.linkedinUrl || '',
+      githubUrl: data.githubUrl || '',
+      preferredDomain: data.preferredDomain || 'Software Development & Engineering',
       rollNumber: data.rollNumber || '',
       enrollmentNumber: data.enrollmentNumber || '',
     });
@@ -560,6 +596,53 @@ export default function StudentProfile() {
                   />
                 </div>
 
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    Preferred Career Domain
+                  </label>
+                  <select
+                    name="preferredDomain"
+                    className="form-input"
+                    value={formData.preferredDomain}
+                    onChange={handleInputChange}
+                  >
+                    <option value="Software Development & Engineering">Software Development & Engineering</option>
+                    <option value="Full Stack Web Development">Full Stack Web Development</option>
+                    <option value="Data Science, AI & Machine Learning">Data Science, AI & Machine Learning</option>
+                    <option value="Cloud Architecture & DevOps">Cloud Architecture & DevOps</option>
+                    <option value="Cybersecurity & Network Security">Cybersecurity & Network Security</option>
+                    <option value="Core Engineering & Embedded Systems">Core Engineering & Embedded Systems</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    LinkedIn Profile URL
+                  </label>
+                  <input
+                    type="url"
+                    name="linkedinUrl"
+                    className="form-input"
+                    value={formData.linkedinUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://linkedin.com/in/username"
+                  />
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '6px' }}>
+                    GitHub / Portfolio URL
+                  </label>
+                  <input
+                    type="url"
+                    name="githubUrl"
+                    className="form-input"
+                    value={formData.githubUrl}
+                    onChange={handleInputChange}
+                    placeholder="https://github.com/username"
+                  />
+                </div>
+
                 <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ display: 'block', fontSize: '13px', fontWeight: '500', color: 'var(--text-secondary)', marginBottom: '6px' }}>
                     Technical Skills & Proficiencies (Comma-separated)
@@ -682,12 +765,63 @@ export default function StudentProfile() {
                   </div>
                 </div>
 
-                <div style={{ gridColumn: 'span 2', padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
+                <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
                   <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <Phone size={14} /> Contact Phone Number
                   </div>
-                  <div style={{ fontSize: '15px', fontWeight: '600', color: '#fff', marginTop: '2px' }}>
+                  <div style={{ fontSize: '15px', fontWeight: '600', color: 'var(--text-primary)', marginTop: '2px' }}>
                     {profile?.phoneNumber || '+91 98765 43210'}
+                  </div>
+                </div>
+
+                <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Briefcase size={14} color="#6366f1" /> Preferred Career Domain
+                  </div>
+                  <div style={{ fontSize: '15px', fontWeight: '600', color: '#818cf8', marginTop: '2px' }}>
+                    {profile?.preferredDomain || user?.preferredDomain || 'Software Development & Engineering'}
+                  </div>
+                </div>
+
+                <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Linkedin size={14} color="#0a66c2" /> LinkedIn Profile
+                  </div>
+                  <div style={{ fontSize: '14px', marginTop: '4px' }}>
+                    {profile?.linkedinUrl || user?.linkedinUrl ? (
+                      <a
+                        href={profile?.linkedinUrl || user?.linkedinUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: '#38bdf8', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}
+                      >
+                        <span>View LinkedIn</span>
+                        <ExternalLink size={12} />
+                      </a>
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Not linked yet</span>
+                    )}
+                  </div>
+                </div>
+
+                <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: 'var(--radius-md)' }}>
+                  <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <Github size={14} /> GitHub / Portfolio
+                  </div>
+                  <div style={{ fontSize: '14px', marginTop: '4px' }}>
+                    {profile?.githubUrl || user?.githubUrl ? (
+                      <a
+                        href={profile?.githubUrl || user?.githubUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: '#a78bfa', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px', fontWeight: '500' }}
+                      >
+                        <span>View Portfolio</span>
+                        <ExternalLink size={12} />
+                      </a>
+                    ) : (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '13px' }}>Not linked yet</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -724,7 +858,7 @@ export default function StudentProfile() {
         {/* Right Column: Resume Card (Module 2: Resume Management) */}
         <div className="card" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#fff', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <h3 style={{ fontSize: '16px', fontWeight: '700', color: 'var(--text-primary)', marginBottom: '14px', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <FileCheck size={18} color="#10b981" />
               <span>Placement Resume</span>
             </h3>
@@ -746,7 +880,7 @@ export default function StudentProfile() {
                 }}
               >
                 <FileText size={36} color="#3b82f6" style={{ margin: '0 auto 8px' }} />
-                <div style={{ fontSize: '13px', fontWeight: '700', color: '#fff', wordBreak: 'break-all' }}>
+                <div style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', wordBreak: 'break-all' }}>
                   {resume.originalFileName}
                 </div>
                 {resume.formattedSize && (
@@ -787,6 +921,99 @@ export default function StudentProfile() {
                     </>
                   )}
                 </button>
+
+                {/* Generic ATS Score Section */}
+                <div style={{ marginTop: '16px', paddingTop: '16px', borderTop: '1px solid var(--border-subtle)', textAlign: 'left' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <span style={{ fontSize: '13px', fontWeight: '700', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Sparkles size={14} color="#6366f1" /> Resume ATS Score
+                    </span>
+                    {atsData && (
+                      <span
+                        style={{
+                          fontSize: '11px',
+                          fontWeight: '700',
+                          padding: '2px 8px',
+                          borderRadius: '6px',
+                          background: atsData.atsScore >= 80 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)',
+                          color: atsData.atsScore >= 80 ? '#10b981' : '#f59e0b',
+                        }}
+                      >
+                        {atsData.scoreBand}
+                      </span>
+                    )}
+                  </div>
+
+                  {loadingAts ? (
+                    <div style={{ fontSize: '12px', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px', padding: '10px 0' }}>
+                      <Loader2 size={13} style={{ animation: 'spin 1s linear infinite' }} />
+                      <span>Calculating ATS match score...</span>
+                    </div>
+                  ) : atsData ? (
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginBottom: '6px' }}>
+                        <span style={{ fontSize: '26px', fontWeight: '800', color: atsData.atsScore >= 80 ? '#10b981' : '#6366f1' }}>
+                          {atsData.atsScore}
+                        </span>
+                        <span style={{ fontSize: '12px', color: 'var(--text-muted)' }}>/ 100 Overall Score</span>
+                      </div>
+
+                      <div style={{ height: '6px', background: 'var(--border-subtle)', borderRadius: '4px', overflow: 'hidden', marginBottom: '12px' }}>
+                        <div
+                          style={{
+                            height: '100%',
+                            width: `${atsData.atsScore}%`,
+                            background: atsData.atsScore >= 80 ? '#10b981' : '#6366f1',
+                            borderRadius: '4px',
+                            transition: 'width 0.4s ease',
+                          }}
+                        />
+                      </div>
+
+                      {/* Matched Keywords */}
+                      {atsData.matchedKeywords && atsData.matchedKeywords.length > 0 ? (
+                        <div style={{ marginBottom: '10px' }}>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                            Detected ATS Keywords ({atsData.matchedKeywords.length}):
+                          </span>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4px' }}>
+                            {atsData.matchedKeywords.slice(0, 8).map((kw, i) => (
+                              <span
+                                key={i}
+                                style={{
+                                  fontSize: '10.5px',
+                                  padding: '1px 6px',
+                                  borderRadius: '4px',
+                                  background: 'rgba(99, 102, 241, 0.1)',
+                                  color: '#818cf8',
+                                  fontWeight: '600',
+                                }}
+                              >
+                                {kw}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ marginBottom: '10px', fontSize: '11.5px', color: 'var(--text-muted)' }}>
+                          No core technical keywords detected in the uploaded resume.
+                        </div>
+                      )}
+
+                      {/* Top Actionable Improvements */}
+                      {atsData.topImprovements && atsData.topImprovements.length > 0 && (
+                        <div>
+                          <span style={{ fontSize: '11px', fontWeight: '600', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                            Top ATS Recommendation:
+                          </span>
+                          <div style={{ fontSize: '11.5px', color: 'var(--text-secondary)', lineHeight: 1.4, background: 'var(--bg-subtle)', padding: '6px 8px', borderRadius: '6px' }}>
+                            💡 {atsData.topImprovements[0]}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : null}
+                </div>
               </div>
             ) : (
               <div

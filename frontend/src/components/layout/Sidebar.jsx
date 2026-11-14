@@ -17,6 +17,7 @@ import {
   BookOpen,
   Shield,
   Layers,
+  Award,
 } from 'lucide-react';
 
 export default function Sidebar({ isOpen, onClose }) {
@@ -32,6 +33,7 @@ export default function Sidebar({ isOpen, onClose }) {
           { label: 'Drive Management', to: '/placement/drives', icon: Building2 },
           { label: 'Applicant Roster', to: '/placement/applications', icon: FileText },
           { label: 'Interview Scheduler', to: '/placement/interviews', icon: Calendar },
+          { label: 'Exam Portal Management', to: '/placement/exams', icon: Award },
           { label: 'Question Bank', to: '/placement/questions', icon: BookOpen },
           { label: 'Eligibility Checker', to: '/placement/eligibility', icon: CheckCircle },
         ];
@@ -61,7 +63,8 @@ export default function Sidebar({ isOpen, onClose }) {
           { label: 'Eligible Drives', to: '/student/drives', icon: Briefcase },
           { label: 'My Applications', to: '/student/applications', icon: FileText },
           { label: 'Interviews Hub', to: '/student/interviews', icon: CalendarCheck },
-          { label: 'Interview Questions', to: '/student/company-questions', icon: Building2 },
+          { label: 'Company Questions', to: '/student/company-questions', icon: Building2 },
+          { label: 'Online Exam Portal', to: '/student/exams', icon: Award },
           { label: 'Notifications', to: '/student/notifications', icon: Bell },
           { label: 'Profile & Resume', to: '/student/profile', icon: User },
         ];

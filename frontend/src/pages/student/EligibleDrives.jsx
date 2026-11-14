@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { driveService } from '../../services/driveService';
 import { applicationService } from '../../services/applicationService';
+import { atsService } from '../../services/atsService';
 import {
   Search,
   Filter,
@@ -14,6 +15,8 @@ import {
   GraduationCap,
   X,
   AlertCircle,
+  Sparkles,
+  Award,
 } from 'lucide-react';
 
 export default function EligibleDrives() {
@@ -248,6 +251,39 @@ export default function EligibleDrives() {
                     Req: {drive.minCgpa} CGPA • Backlogs &le; {drive.maxBacklogs}
                   </span>
                 </div>
+
+                {/* Company-Specific ATS Fit Score */}
+                {(() => {
+                  const compAts = atsService.calculateCompanyAts(user, drive.company, drive.role, drive.requiredSkills);
+                  return (
+                    <div
+                      style={{
+                        padding: '8px 12px',
+                        borderRadius: 'var(--radius-md)',
+                        background: 'rgba(99, 102, 241, 0.08)',
+                        border: '1px solid rgba(99, 102, 241, 0.25)',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        fontSize: '12px',
+                        marginBottom: '16px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Sparkles size={14} color="#6366f1" />
+                        <span style={{ fontWeight: '600', color: 'var(--text-primary)' }}>
+                          ATS Score for {drive.company}:
+                        </span>
+                        <span style={{ fontWeight: '800', color: compAts.atsScore >= 80 ? '#10b981' : '#6366f1' }}>
+                          {compAts.atsScore}%
+                        </span>
+                      </div>
+                      <span style={{ fontSize: '11px', color: compAts.atsScore >= 80 ? '#10b981' : 'var(--text-muted)', fontWeight: '600' }}>
+                        {compAts.matchQuality}
+                      </span>
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Action Buttons */}
@@ -341,6 +377,40 @@ export default function EligibleDrives() {
                   <li>Registration Deadline: <strong>{new Date(selectedDrive.deadline).toLocaleString()}</strong></li>
                 </ul>
               </div>
+
+              {/* Company-Specific ATS Fit Evaluation */}
+              {(() => {
+                const modalAts = atsService.calculateCompanyAts(user, selectedDrive.company, selectedDrive.role, selectedDrive.requiredSkills);
+                return (
+                  <div style={{ padding: '14px', background: 'var(--bg-main)', borderRadius: '10px', border: '1px solid var(--border-subtle)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                      <span style={{ fontSize: '13px', fontWeight: '700', color: '#6366f1', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <Sparkles size={14} /> ATS Resume Fit for {selectedDrive.company}
+                      </span>
+                      <span style={{ fontSize: '12px', fontWeight: '700', color: modalAts.atsScore >= 80 ? '#10b981' : '#f59e0b' }}>
+                        {modalAts.atsScore}% ({modalAts.matchQuality})
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '8px' }}>
+                      {modalAts.recommendation}
+                    </div>
+
+                    {modalAts.matchedKeywords.length > 0 && (
+                      <div style={{ fontSize: '11.5px', marginBottom: '4px' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Matched Tech Skills: </span>
+                        <span style={{ color: '#10b981', fontWeight: '600' }}>{modalAts.matchedKeywords.join(', ')}</span>
+                      </div>
+                    )}
+                    {modalAts.missingKeywords.length > 0 && (
+                      <div style={{ fontSize: '11.5px' }}>
+                        <span style={{ color: 'var(--text-muted)' }}>Skills to Emphasize: </span>
+                        <span style={{ color: '#f59e0b', fontWeight: '600' }}>{modalAts.missingKeywords.slice(0, 4).join(', ')}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>

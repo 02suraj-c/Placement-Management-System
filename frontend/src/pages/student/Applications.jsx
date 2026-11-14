@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import { applicationService } from '../../services/applicationService';
 import { aiService } from '../../services/aiService';
+import { atsService } from '../../services/atsService';
 import {
   FileText,
   Calendar,
@@ -215,6 +216,44 @@ export default function Applications() {
                   </div>
                 </div>
               </div>
+
+              {/* Applicant's ATS Score for this Company Application */}
+              {(() => {
+                const appAts = atsService.calculateCompanyAts(user, app.company, app.role);
+                return (
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      flexWrap: 'wrap',
+                      gap: '8px',
+                      padding: '8px 14px',
+                      background: 'rgba(99, 102, 241, 0.08)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid rgba(99, 102, 241, 0.25)',
+                      marginBottom: '16px',
+                      fontSize: '12px',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <Sparkles size={14} color="#6366f1" />
+                      <span style={{ color: 'var(--text-secondary)' }}>ATS Score for this Application ({app.company}):</span>
+                      <span style={{ fontWeight: '800', color: appAts.atsScore >= 80 ? '#10b981' : '#6366f1' }}>
+                        {appAts.atsScore}% Match
+                      </span>
+                      <span style={{ fontSize: '11px', color: appAts.atsScore >= 80 ? '#10b981' : '#f59e0b', fontWeight: '600' }}>
+                        ({appAts.matchQuality})
+                      </span>
+                    </div>
+                    {appAts.matchedKeywords.length > 0 && (
+                      <span style={{ color: 'var(--text-muted)', fontSize: '11px' }}>
+                        Matched: {appAts.matchedKeywords.slice(0, 3).join(', ')}
+                      </span>
+                    )}
+                  </div>
+                );
+              })()}
 
               {/* Status Visualizer Pipeline */}
               <div style={{ background: 'var(--bg-main)', padding: '16px 20px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border-subtle)', marginBottom: '16px' }}>

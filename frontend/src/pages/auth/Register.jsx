@@ -17,6 +17,12 @@ import {
   Building,
   Briefcase,
   AlertCircle,
+  FileText,
+  Upload,
+  X,
+  Globe,
+  Linkedin,
+  Github,
 } from 'lucide-react';
 import ThemeToggle from '../../components/common/ThemeToggle';
 
@@ -44,7 +50,10 @@ export default function Register() {
     graduationYear: '2026',
     cgpa: '8.5',
     activeBacklogs: '0',
-    skills: 'Java, Python, Data Structures, React, SQL',
+    skills: '',
+    linkedinUrl: '',
+    githubUrl: '',
+    preferredDomain: 'Software Development & Engineering',
     // Professional details (for Faculty / Officer / HOD)
     designation: '',
     employeeId: '',
@@ -56,10 +65,36 @@ export default function Register() {
 
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [resumeFile, setResumeFile] = useState(null);
+  const [resumeError, setResumeError] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleResumeChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setResumeError('');
+
+    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+    if (!['.pdf', '.docx'].includes(ext)) {
+      setResumeError('Only PDF (.pdf) and Word (.docx) formats are supported.');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setResumeError(`File size (${(file.size / (1024 * 1024)).toFixed(1)} MB) exceeds 5 MB limit.`);
+      return;
+    }
+
+    setResumeFile(file);
+  };
+
+  const handleRemoveResume = () => {
+    setResumeFile(null);
+    setResumeError('');
   };
 
   const handleSubmit = async (e) => {
@@ -116,6 +151,10 @@ export default function Register() {
         cgpa: formData.cgpa ? parseFloat(formData.cgpa) : 8.0,
         activeBacklogs: formData.activeBacklogs ? parseInt(formData.activeBacklogs, 10) : 0,
         skills: formData.skills,
+        linkedinUrl: formData.linkedinUrl.trim(),
+        githubUrl: formData.githubUrl.trim(),
+        preferredDomain: formData.preferredDomain,
+        resumeFile: resumeFile || undefined,
         // Staff details
         designation: formData.designation,
         employeeId: formData.employeeId,
@@ -461,6 +500,150 @@ export default function Register() {
                       placeholder="Java, Python, DSA, React, SQL"
                       style={styles.input}
                     />
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>Preferred Career Domain</label>
+                    <select
+                      name="preferredDomain"
+                      value={formData.preferredDomain}
+                      onChange={handleChange}
+                      style={styles.select}
+                    >
+                      <option value="Software Development & Engineering">Software Development & Engineering</option>
+                      <option value="Full Stack Web Development">Full Stack Web Development</option>
+                      <option value="Data Science, AI & Machine Learning">Data Science, AI & Machine Learning</option>
+                      <option value="Cloud Architecture & DevOps">Cloud Architecture & DevOps</option>
+                      <option value="Cybersecurity & Network Security">Cybersecurity & Network Security</option>
+                      <option value="Core Engineering & Embedded Systems">Core Engineering & Embedded Systems</option>
+                    </select>
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>
+                      LinkedIn Profile <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>(Optional)</span>
+                    </label>
+                    <div style={styles.inputWrapper}>
+                      <Linkedin size={15} style={styles.inputIcon} />
+                      <input
+                        type="url"
+                        name="linkedinUrl"
+                        value={formData.linkedinUrl}
+                        onChange={handleChange}
+                        placeholder="https://linkedin.com/in/username"
+                        style={styles.inputWithIcon}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={styles.formGroup}>
+                    <label style={styles.label}>
+                      GitHub / Portfolio <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>(Optional)</span>
+                    </label>
+                    <div style={styles.inputWrapper}>
+                      <Github size={15} style={styles.inputIcon} />
+                      <input
+                        type="url"
+                        name="githubUrl"
+                        value={formData.githubUrl}
+                        onChange={handleChange}
+                        placeholder="https://github.com/username"
+                        style={styles.inputWithIcon}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Optional Resume Upload Field */}
+                  <div style={{ ...styles.formGroup, gridColumn: 'span 2' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                      <label style={{ ...styles.label, marginBottom: 0 }}>
+                        Upload Resume <span style={{ fontSize: '11px', color: 'var(--text-muted)', fontWeight: '400' }}>(Optional - PDF or DOCX, max 5MB)</span>
+                      </label>
+                      <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                        You can also upload or update this later in your Profile
+                      </span>
+                    </div>
+
+                    {!resumeFile ? (
+                      <label
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          padding: '20px 16px',
+                          border: '2px dashed var(--border-subtle)',
+                          borderRadius: '12px',
+                          background: 'var(--bg-main)',
+                          cursor: 'pointer',
+                          transition: 'border-color 0.2s',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <input
+                          type="file"
+                          accept=".pdf,.docx"
+                          onChange={handleResumeChange}
+                          style={{ display: 'none' }}
+                        />
+                        <Upload size={22} color="#6366f1" style={{ marginBottom: '8px' }} />
+                        <span style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                          Click to browse or drag & drop resume file
+                        </span>
+                        <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '4px' }}>
+                          Supported formats: PDF (.pdf) or Word (.docx) up to 5 MB
+                        </span>
+                      </label>
+                    ) : (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'space-between',
+                          padding: '12px 16px',
+                          background: 'rgba(99, 102, 241, 0.08)',
+                          border: '1px solid rgba(99, 102, 241, 0.3)',
+                          borderRadius: '12px',
+                        }}
+                      >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                          <FileText size={20} color="#6366f1" />
+                          <div>
+                            <div style={{ fontSize: '13px', fontWeight: '600', color: 'var(--text-primary)' }}>
+                              {resumeFile.name}
+                            </div>
+                            <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>
+                              {(resumeFile.size / 1024).toFixed(1)} KB • Ready to submit
+                            </div>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={handleRemoveResume}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: 'var(--text-muted)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: '4px',
+                            fontSize: '12px',
+                            padding: '4px 8px',
+                            borderRadius: '6px',
+                          }}
+                        >
+                          <X size={15} />
+                          <span>Remove</span>
+                        </button>
+                      </div>
+                    )}
+
+                    {resumeError && (
+                      <div style={{ color: 'var(--danger)', fontSize: '12px', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                        <AlertCircle size={13} /> {resumeError}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

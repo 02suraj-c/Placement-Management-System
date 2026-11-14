@@ -17,6 +17,7 @@ import Applications from '../pages/student/Applications';
 import Interviews from '../pages/student/Interviews';
 import Notifications from '../pages/student/Notifications';
 import StudentProfile from '../pages/student/StudentProfile';
+import ExamPortal from '../pages/student/ExamPortal';
 
 // Officer Pages
 import OfficerDashboard from '../pages/officer/OfficerDashboard';
@@ -24,6 +25,7 @@ import DriveManagement from '../pages/officer/DriveManagement';
 import ApplicantReview from '../pages/officer/ApplicantReview';
 import InterviewScheduler from '../pages/officer/InterviewScheduler';
 import QuestionBank from '../pages/officer/QuestionBank';
+import ExamManagement from '../pages/officer/ExamManagement';
 
 // Placement Module Pages (Person 3)
 import Eligibility from '../pages/placement/Eligibility';
@@ -88,6 +90,7 @@ export default function AppRoutes() {
         <Route path="drives" element={<EligibleDrives />} />
         <Route path="applications" element={<Applications />} />
         <Route path="interviews" element={<Interviews />} />
+        <Route path="exams" element={<ExamPortal />} />
         <Route path="notifications" element={<Notifications />} />
         <Route path="profile" element={<StudentProfile />} />
       </Route>
@@ -105,6 +108,7 @@ export default function AppRoutes() {
         <Route path="drives" element={<DriveManagement />} />
         <Route path="applications" element={<ApplicantReview />} />
         <Route path="interviews" element={<InterviewScheduler />} />
+        <Route path="exams" element={<ExamManagement />} />
         <Route path="questions" element={<QuestionBank />} />
         <Route path="eligibility" element={<Eligibility />} />
       </Route>

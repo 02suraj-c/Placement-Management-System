@@ -47,8 +47,11 @@ export const studentService = {
       address: student?.address || storedUser?.address || 'JECRC Campus, Sitapura, Jaipur',
       skills: Array.isArray(student?.skills)
         ? student.skills.join(', ')
-        : (student?.skills || storedUser?.skills || 'Java, Spring Boot, React.js, MySQL, Docker'),
+        : (student?.skills || storedUser?.skills || ''),
       resumeUrl: student?.resumeUrl || null,
+      linkedinUrl: student?.linkedinUrl || storedUser?.linkedinUrl || '',
+      githubUrl: student?.githubUrl || storedUser?.githubUrl || '',
+      preferredDomain: student?.preferredDomain || storedUser?.preferredDomain || 'Software Development',
     };
   },
 
@@ -68,6 +71,9 @@ export const studentService = {
       totalBacklogs: parseInt(updateData.totalBacklogs || 0, 10),
       phoneNumber: updateData.phoneNumber,
       skills: updateData.skills,
+      linkedinUrl: updateData.linkedinUrl || '',
+      githubUrl: updateData.githubUrl || '',
+      preferredDomain: updateData.preferredDomain || 'Software Development',
     };
 
     if (!isMockMode()) {

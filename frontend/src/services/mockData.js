@@ -12,8 +12,9 @@ const INITIAL_USERS = [
     rollNumber: "CS2026-042",
     batch: "2026",
     phone: "+91 98765 43210",
-    skills: ["Java", "Spring Boot", "React.js", "MySQL", "Data Structures", "Docker"],
-    resumeUrl: "/resumes/Aarav_Sharma_Resume.pdf"
+    skills: [],
+    resumeUrl: null,
+    resumeMetadata: null
   },
   {
     id: 2,
@@ -347,8 +348,25 @@ export const getMockStore = () => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
+      let modified = false;
       if (!parsed.questions || parsed.questions.length === 0) {
         parsed.questions = INITIAL_QUESTIONS;
+        modified = true;
+      }
+      if (parsed.users) {
+        parsed.users.forEach((u) => {
+          if (u.resumeUrl && String(u.resumeUrl).includes('Aarav_Sharma')) {
+            u.resumeUrl = null;
+            u.resumeMetadata = null;
+            modified = true;
+          }
+          if (u.id === 1 && Array.isArray(u.skills) && u.skills.includes('Spring Boot') && u.skills.includes('Docker')) {
+            u.skills = [];
+            modified = true;
+          }
+        });
+      }
+      if (modified) {
         saveMockStore(parsed);
       }
       return parsed;

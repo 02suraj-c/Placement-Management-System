@@ -1,5 +1,6 @@
 import apiClient, { API_BASE_URL, isMockMode } from './api';
 import { getMockStore, saveMockStore } from './mockData';
+import { extractTextFromFile } from './resumeService';
 
 export const authService = {
   async login(email, password) {
@@ -110,8 +111,40 @@ export const authService = {
           ? payload.skills
           : payload.skills
           ? payload.skills.split(',').map((s) => s.trim()).filter(Boolean)
-          : ['Java', 'SQL', 'Web Development'],
+          : [],
+        linkedinUrl: payload.linkedinUrl || '',
+        githubUrl: payload.githubUrl || '',
+        preferredDomain: payload.preferredDomain || 'Software Development',
+        resumeMetadata: null,
+        resumeUrl: null,
       };
+
+      if (payload.resumeFile) {
+        const file = payload.resumeFile;
+        const formattedSize = file.size < 1024 * 1024
+          ? `${(file.size / 1024).toFixed(1)} KB`
+          : `${(file.size / (1024 * 1024)).toFixed(2)} MB`;
+        let extractedText = '';
+        try {
+          extractedText = await extractTextFromFile(file);
+        } catch (e) {}
+
+        newUser.resumeMetadata = {
+          id: Date.now(),
+          studentId: newUser.id,
+          studentName: name,
+          rollNumber,
+          originalFileName: file.name,
+          contentType: file.type || 'application/pdf',
+          fileSize: file.size,
+          formattedSize,
+          active: true,
+          uploadedAt: new Date().toISOString(),
+          downloadUrl: '/api/resumes/me/download',
+          extractedText,
+        };
+        newUser.resumeUrl = `/resumes/${file.name}`;
+      }
 
       store.users.push(newUser);
       saveMockStore(store);
@@ -135,6 +168,10 @@ export const authService = {
         phoneNumber: newUser.phoneNumber,
         address: newUser.address,
         skills: newUser.skills,
+        linkedinUrl: newUser.linkedinUrl,
+        githubUrl: newUser.githubUrl,
+        preferredDomain: newUser.preferredDomain,
+        resumeMetadata: newUser.resumeMetadata,
       };
 
       localStorage.setItem('auth_token', authData.token);

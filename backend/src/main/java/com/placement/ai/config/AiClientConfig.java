@@ -9,12 +9,10 @@ import org.springframework.http.MediaType;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
-import java.net.http.HttpClient;
-import org.springframework.http.client.JdkClientHttpRequestFactory;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 /**
  * Wires the RestClient used exclusively by AIService.
- * Uses JDK HttpClient underneath so we can set a connect + read timeout.
  */
 @Configuration
 @EnableConfigurationProperties(AiProperties.class)
@@ -22,13 +20,8 @@ public class AiClientConfig {
 
     @Bean("aiRestClient")
     public RestClient aiRestClient(AiProperties props) {
-
-        // JDK 11+ HttpClient with a per-request timeout
-        HttpClient jdkClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(props.timeoutSeconds()))
-                .build();
-
-        JdkClientHttpRequestFactory factory = new JdkClientHttpRequestFactory(jdkClient);
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(props.timeoutSeconds()));
         factory.setReadTimeout(Duration.ofSeconds(props.timeoutSeconds()));
 
         return RestClient.builder()

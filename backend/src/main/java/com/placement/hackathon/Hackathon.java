@@ -58,6 +58,9 @@ public class Hackathon {
     @Column(name = "eligibility_criteria", length = 500)
     private String eligibilityCriteria;
 
+    @Column(name = "target_years", length = 100)
+    private String targetYears;
+
     @Column(name = "registration_url", length = 255)
     private String registrationUrl;
 

@@ -7,7 +7,6 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * Represents an interview question in the question bank.
@@ -78,11 +77,18 @@ public class InterviewQuestion {
 
     /**
      * Comma-separated tags for fine-grained filtering (e.g., "recursion,tree,dp").
-     * Kept simple to avoid a join table for tags.
      */
     @Size(max = 500)
     @Column(length = 500)
     private String tags;
+
+    /**
+     * Target student academic years (e.g., "1,2", "3,4", "1,2,3,4").
+     * When null or empty, available to all years.
+     */
+    @Size(max = 100)
+    @Column(name = "target_years", length = 100)
+    private String targetYears;
 
     /**
      * Year when this question was reportedly asked (nullable).
@@ -90,6 +96,13 @@ public class InterviewQuestion {
     @Min(2000)
     @Max(2100)
     private Integer yearAsked;
+
+    /**
+     * Weightage / Marks assigned to this question in assessments.
+     */
+    @Column(name = "marks")
+    @Builder.Default
+    private Integer marks = 10;
 
     /**
      * Source: "AI_GENERATED" | "MANUAL" | "STUDENT_CONTRIBUTED"

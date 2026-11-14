@@ -41,8 +41,13 @@ public class QuestionRequest {
     @Size(max = 500)
     private String tags;             // comma-separated
 
+    @Size(max = 100)
+    private String targetYears;      // multi-select comma-separated (e.g. "1,2", "3,4")
+
     @Min(2000) @Max(2100)
     private Integer yearAsked;
+
+    private Integer marks;
 
     @Size(max = 50)
     private String source;           // defaults to MANUAL if omitted

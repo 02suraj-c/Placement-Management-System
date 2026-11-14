@@ -1,9 +1,17 @@
 package com.placement.placement;
 
+import com.placement.student.Student;
+import com.placement.student.StudentRepository;
+import com.placement.user.User;
+import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,6 +34,12 @@ public class PlacementController {
 
     private final PlacementService placementService;
 
+    @Autowired(required = false)
+    private UserRepository userRepository;
+
+    @Autowired(required = false)
+    private StudentRepository studentRepository;
+
     public PlacementController(PlacementService placementService) {
         this.placementService = placementService;
     }
@@ -47,7 +61,27 @@ public class PlacementController {
     // =========================================================================
     @GetMapping
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<PlacementDrive>> getAllPlacementDrives() {
+    public ResponseEntity<List<PlacementDrive>> getAllPlacementDrives(
+            @RequestParam(required = false) Integer year,
+            java.security.Principal principal) {
+
+        if (principal != null && userRepository != null && studentRepository != null) {
+            String email = principal.getName();
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null && user.getRole() == UserRole.ROLE_STUDENT) {
+                // Students can ONLY see drives targeting their own academic year.
+                // Any 'year' parameter passed from client is ignored and overridden.
+                Student student = studentRepository.findByUserEmail(email).orElse(null);
+                int studentYear = (student != null) ? student.getAcademicYear() : 1;
+                return ResponseEntity.ok(placementService.getDrivesForYear(studentYear));
+            }
+        }
+
+        // Faculty/Staff can filter by year or view all
+        if (year != null && year > 0) {
+            return ResponseEntity.ok(placementService.getDrivesForYear(year));
+        }
+
         List<PlacementDrive> drives = placementService.getAllPlacementDrives();
         return ResponseEntity.ok(drives);
     }
@@ -106,14 +140,15 @@ public class PlacementController {
     }
 
     // =========================================================================
-    // GET /api/placement-drives/search?jobTitle={jobTitle}
+    // GET /api/placement-drives/search?keyword=
     // =========================================================================
     @GetMapping("/search")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<PlacementDrive>> searchDrivesByJobTitle(
-            @RequestParam(required = false, defaultValue = "") String jobTitle) {
-
-        List<PlacementDrive> drives = placementService.searchDrivesByJobTitle(jobTitle);
+    public ResponseEntity<List<PlacementDrive>> searchDrives(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String jobTitle) {
+        String term = (jobTitle != null && !jobTitle.isBlank()) ? jobTitle : keyword;
+        List<PlacementDrive> drives = placementService.searchDrivesByJobTitle(term);
         return ResponseEntity.ok(drives);
     }
 }

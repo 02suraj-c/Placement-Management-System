@@ -32,6 +32,10 @@ public class StudentProfileRequest {
     @Max(value = 8, message = "Current semester cannot exceed 8")
     private Integer currentSemester;
 
+    @Min(value = 1, message = "Academic year must be between 1 and 4")
+    @Max(value = 4, message = "Academic year must be between 1 and 4")
+    private Integer academicYear;
+
     @NotNull(message = "CGPA is required")
     @DecimalMin(value = "0.0", message = "CGPA cannot be less than 0.0")
     @DecimalMax(value = "10.0", message = "CGPA cannot exceed 10.0")

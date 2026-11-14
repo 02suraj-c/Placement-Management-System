@@ -24,25 +24,30 @@ export const studentService = {
     const store = getMockStore();
     const storedUser = JSON.parse(localStorage.getItem('auth_user') || '{}');
     const student = store.users.find(
-      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase() || u.role === 'ROLE_STUDENT'
-    );
+      (u) => u.email?.toLowerCase() === storedUser.email?.toLowerCase()
+    ) || storedUser;
 
     return {
-      id: student?.id || 1,
-      name: student?.name || 'Aarav Sharma',
-      email: student?.email || 'student@placement.edu',
-      rollNumber: student?.rollNumber || 'CS2026-042',
-      enrollmentNumber: student?.enrollmentNumber || 'EN2022-9876',
-      department: student?.department || 'Computer Science & Engineering',
-      course: student?.course || 'B.Tech',
-      passingYear: student?.passingYear || 2026,
-      cgpa: student?.cgpa !== undefined ? student.cgpa : 8.85,
+      id: student?.id || storedUser?.id || 1,
+      name: student?.name || storedUser?.name || 'Aarav Sharma',
+      email: student?.email || storedUser?.email || 'student@placement.edu',
+      rollNumber: student?.rollNumber || storedUser?.rollNumber || 'CS2026-042',
+      enrollmentNumber: student?.enrollmentNumber || storedUser?.enrollmentNumber || 'EN2022-9876',
+      department: student?.department || storedUser?.department || 'Computer Science & Engineering',
+      course: student?.course || storedUser?.course || 'B.Tech',
+      studentYear: student?.studentYear || storedUser?.studentYear || '4th Year',
+      currentSemester: student?.currentSemester || storedUser?.currentSemester || 7,
+      passingYear: student?.graduationYear || student?.passingYear || storedUser?.graduationYear || 2026,
+      cgpa: student?.cgpa !== undefined ? student.cgpa : (storedUser?.cgpa !== undefined ? storedUser.cgpa : 8.85),
       tenthPercentage: student?.tenthPercentage !== undefined ? student.tenthPercentage : 92.5,
       twelfthPercentage: student?.twelfthPercentage !== undefined ? student.twelfthPercentage : 89.0,
-      activeBacklogs: student?.backlogs !== undefined ? student.backlogs : 0,
+      activeBacklogs: student?.activeBacklogs !== undefined ? student.activeBacklogs : (student?.backlogs !== undefined ? student.backlogs : 0),
       totalBacklogs: student?.totalBacklogs !== undefined ? student.totalBacklogs : 0,
-      phoneNumber: student?.phone || '+91 98765 43210',
-      skills: Array.isArray(student?.skills) ? student.skills.join(', ') : (student?.skills || 'Java, Spring Boot, React.js, MySQL, Docker'),
+      phoneNumber: student?.phoneNumber || student?.phone || storedUser?.phoneNumber || '+91 98765 43210',
+      address: student?.address || storedUser?.address || 'JECRC Campus, Sitapura, Jaipur',
+      skills: Array.isArray(student?.skills)
+        ? student.skills.join(', ')
+        : (student?.skills || storedUser?.skills || 'Java, Spring Boot, React.js, MySQL, Docker'),
       resumeUrl: student?.resumeUrl || null,
     };
   },

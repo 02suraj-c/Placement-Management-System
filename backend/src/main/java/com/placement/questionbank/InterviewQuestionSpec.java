@@ -46,6 +46,15 @@ public final class InterviewQuestionSpec {
             if (f.getYearAsked() != null) {
                 predicates.add(cb.equal(root.get("yearAsked"), f.getYearAsked()));
             }
+            if (f.getTargetYear() != null && f.getTargetYear() > 0) {
+                String yr = String.valueOf(f.getTargetYear());
+                predicates.add(cb.or(
+                    cb.isNull(root.get("targetYears")),
+                    cb.equal(root.get("targetYears"), ""),
+                    cb.like(cb.lower(root.get("targetYears")), "%all%"),
+                    cb.like(root.get("targetYears"), "%" + yr + "%")
+                ));
+            }
             if (hasText(f.getKeyword())) {
                 String kw = "%" + f.getKeyword().toLowerCase() + "%";
                 predicates.add(cb.or(

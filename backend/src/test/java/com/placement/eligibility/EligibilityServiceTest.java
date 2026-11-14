@@ -257,4 +257,39 @@ class EligibilityServiceTest {
 
         assertTrue(ex.getMessage().contains("PlacementDrive not found with id : '999'"));
     }
+
+    @Test
+    @DisplayName("13. Missing CGPA -> profile incomplete and ineligible")
+    void testMissingCgpaProfileIncomplete() {
+        standardStudent.setCgpa(null);
+
+        EligibilityCheckResponse response = eligibilityService.evaluateEligibility(standardStudent, standardDrive);
+
+        assertFalse(response.isEligible());
+        assertFalse(response.getProfileComplete());
+        assertTrue(response.getReasons().stream().anyMatch(r -> r.contains("CGPA is missing")));
+    }
+
+    @Test
+    @DisplayName("14. Missing Department -> profile incomplete and ineligible")
+    void testMissingDepartmentProfileIncomplete() {
+        standardStudent.setDepartment(null);
+
+        EligibilityCheckResponse response = eligibilityService.evaluateEligibility(standardStudent, standardDrive);
+
+        assertFalse(response.isEligible());
+        assertFalse(response.getProfileComplete());
+        assertTrue(response.getReasons().stream().anyMatch(r -> r.contains("Department is missing")));
+    }
+
+    @Test
+    @DisplayName("15. isProfileComplete helper method validation")
+    void testIsProfileCompleteHelper() {
+        assertTrue(eligibilityService.isProfileComplete(standardStudent));
+
+        standardStudent.setCgpa(null);
+        assertFalse(eligibilityService.isProfileComplete(standardStudent));
+
+        assertFalse(eligibilityService.isProfileComplete(null));
+    }
 }

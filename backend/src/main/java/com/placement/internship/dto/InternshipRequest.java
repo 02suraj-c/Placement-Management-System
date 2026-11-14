@@ -42,6 +42,9 @@ public class InternshipRequest {
     @Size(max = 500, message = "Eligibility criteria must not exceed 500 characters")
     private String eligibilityCriteria;
 
+    @Size(max = 100, message = "Target years must not exceed 100 characters")
+    private String targetYears;
+
     @NotNull(message = "Application deadline is required")
     @FutureOrPresent(message = "Application deadline must be today or a future date")
     private LocalDate applicationDeadline;

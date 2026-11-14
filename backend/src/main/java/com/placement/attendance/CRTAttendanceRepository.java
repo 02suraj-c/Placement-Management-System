@@ -11,6 +11,8 @@ public interface CRTAttendanceRepository extends JpaRepository<CRTAttendance, Lo
 
     List<CRTAttendance> findByStudentIdOrderBySessionDateDesc(Long studentId);
 
+    List<CRTAttendance> findByStudentIdAndSemesterOrderBySessionDateDesc(Long studentId, Integer semester);
+
     List<CRTAttendance> findByStudentUserEmailOrderBySessionDateDesc(String userEmail);
 
     boolean existsByStudentIdAndSessionNameAndSessionDate(Long studentId, String sessionName, LocalDate sessionDate);
@@ -18,4 +20,8 @@ public interface CRTAttendanceRepository extends JpaRepository<CRTAttendance, Lo
     long countByStudentId(Long studentId);
 
     long countByStudentIdAndPresentTrue(Long studentId);
+
+    long countByStudentIdAndSemester(Long studentId, Integer semester);
+
+    long countByStudentIdAndSemesterAndPresentTrue(Long studentId, Integer semester);
 }

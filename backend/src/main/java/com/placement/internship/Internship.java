@@ -53,6 +53,9 @@ public class Internship {
     @Column(name = "eligibility_criteria", length = 500)
     private String eligibilityCriteria;
 
+    @Column(name = "target_years", length = 100)
+    private String targetYears;
+
     @Column(name = "application_deadline", nullable = false)
     private LocalDate applicationDeadline;
 

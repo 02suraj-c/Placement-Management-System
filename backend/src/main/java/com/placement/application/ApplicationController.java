@@ -3,6 +3,7 @@ package com.placement.application;
 import com.placement.application.dto.ApplicationRequest;
 import com.placement.application.dto.ApplicationResponse;
 import com.placement.application.dto.ApplicationStatusUpdateRequest;
+import com.placement.application.dto.ApplicationTimelineResponse;
 import com.placement.auth.AuthService;
 import com.placement.auth.dto.UserResponse;
 import com.placement.exception.ResourceNotFoundException;
@@ -13,13 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -41,7 +38,9 @@ public class ApplicationController {
 
     @PostMapping
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<ApplicationResponse> apply(@RequestBody ApplicationRequest request) {
+    public ResponseEntity<ApplicationResponse> apply(
+            @RequestBody ApplicationRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse currentUser = authService.getCurrentUser();
         Student student = studentRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Student", "userId", currentUser.getId()));
@@ -56,7 +55,9 @@ public class ApplicationController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN', 'OFFICER', 'PLACEMENT_OFFICER')")
-    public ResponseEntity<List<ApplicationResponse>> getApplicationsByStudent(@PathVariable Long studentId) {
+    public ResponseEntity<List<ApplicationResponse>> getApplicationsByStudent(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse currentUser = authService.getCurrentUser();
         if (currentUser.getRole() == UserRole.ROLE_STUDENT) {
             Student student = studentRepository.findByUserId(currentUser.getId())
@@ -77,11 +78,31 @@ public class ApplicationController {
         return ResponseEntity.ok(responses);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ApplicationResponse> getApplicationById(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        ApplicationResponse response = applicationService.getApplicationById(id, email);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/{id}/timeline")
+    public ResponseEntity<ApplicationTimelineResponse> getApplicationTimeline(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        ApplicationTimelineResponse timeline = applicationService.getApplicationTimeline(id, email);
+        return ResponseEntity.ok(timeline);
+    }
+
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER')")
     public ResponseEntity<ApplicationResponse> updateStatus(
             @PathVariable Long id,
-            @RequestBody ApplicationStatusUpdateRequest request) {
+            @RequestBody ApplicationStatusUpdateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
         ApplicationResponse response = applicationService.updateStatus(id, request);
         return ResponseEntity.ok(response);
     }

@@ -21,4 +21,6 @@ public class QuestionFilterRequest {
     private InterviewQuestion.QuestionType questionType;
     private String keyword;   // searches questionText + tags
     private Integer yearAsked;
+    private Integer targetYear;
+    private String targetYears;
 }

@@ -29,11 +29,10 @@ public class AttendanceController {
 
     /**
      * Record class attendance for a student.
-     * Authorized: FACULTY, HOD, OFFICER, PLACEMENT_OFFICER, ADMIN.
      * POST /api/attendance/class
      */
     @PostMapping("/class")
-    @PreAuthorize("hasAnyRole('FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<AttendanceRecordResponse>> recordClassAttendance(
             @Valid @RequestBody ClassAttendanceRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -43,12 +42,11 @@ public class AttendanceController {
     }
 
     /**
-     * Record CRT (Campus Recruitment Training) attendance for a student.
-     * Authorized: FACULTY, HOD, OFFICER, PLACEMENT_OFFICER, ADMIN.
+     * Record CRT attendance for a student.
      * POST /api/attendance/crt
      */
     @PostMapping("/crt")
-    @PreAuthorize("hasAnyRole('FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<AttendanceRecordResponse>> recordCRTAttendance(
             @Valid @RequestBody CRTAttendanceRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -58,84 +56,103 @@ public class AttendanceController {
     }
 
     /**
-     * Get attendance summary and percentage for authenticated student.
-     * GET /api/attendance/me/summary
+     * Get attendance summary for authenticated student.
+     * Defaults to current semester.
+     * GET /api/attendance/me/summary?semester={sem}
      */
     @GetMapping("/me/summary")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<AttendanceSummaryResponse>> getMyAttendanceSummary(
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        AttendanceSummaryResponse response = attendanceService.getCurrentStudentAttendanceSummary(userDetails.getUsername());
+        AttendanceSummaryResponse response = attendanceService.getCurrentStudentAttendanceSummary(userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "Attendance summary fetched successfully"));
     }
 
     /**
+     * Get attendance history for past semesters for authenticated student.
+     * GET /api/attendance/me/history
+     */
+    @GetMapping("/me/history")
+    @PreAuthorize("hasRole('STUDENT')")
+    public ResponseEntity<ApiResponse<List<AttendanceSummaryResponse>>> getMyAttendanceHistory(
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        List<AttendanceSummaryResponse> response = attendanceService.getCurrentStudentAttendanceHistory(userDetails.getUsername());
+        return ResponseEntity.ok(ApiResponse.success(response, "Attendance history across semesters fetched successfully"));
+    }
+
+    /**
      * Get class attendance history for authenticated student.
-     * GET /api/attendance/me/class
+     * GET /api/attendance/me/class?semester={sem}
      */
     @GetMapping("/me/class")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<List<AttendanceRecordResponse>>> getMyClassAttendance(
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<AttendanceRecordResponse> response = attendanceService.getCurrentStudentClassAttendance(userDetails.getUsername());
+        List<AttendanceRecordResponse> response = attendanceService.getCurrentStudentClassAttendance(userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "Class attendance history fetched successfully"));
     }
 
     /**
      * Get CRT attendance history for authenticated student.
-     * GET /api/attendance/me/crt
+     * GET /api/attendance/me/crt?semester={sem}
      */
     @GetMapping("/me/crt")
     @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<ApiResponse<List<AttendanceRecordResponse>>> getMyCRTAttendance(
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<AttendanceRecordResponse> response = attendanceService.getCurrentStudentCRTAttendance(userDetails.getUsername());
+        List<AttendanceRecordResponse> response = attendanceService.getCurrentStudentCRTAttendance(userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "CRT attendance history fetched successfully"));
     }
 
     /**
      * Get attendance summary for any student by student ID.
-     * Students may only view their own attendance; staff may view any student's.
-     * GET /api/attendance/student/{studentId}/summary
+     * GET /api/attendance/student/{studentId}/summary?semester={sem}
      */
     @GetMapping("/student/{studentId}/summary")
-    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<AttendanceSummaryResponse>> getStudentAttendanceSummary(
             @PathVariable Long studentId,
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        AttendanceSummaryResponse response = attendanceService.getStudentAttendanceSummary(studentId, userDetails.getUsername());
+        AttendanceSummaryResponse response = attendanceService.getStudentAttendanceSummary(studentId, userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "Attendance summary fetched successfully"));
     }
 
     /**
      * Get class attendance history by student ID.
-     * GET /api/attendance/student/{studentId}/class
+     * GET /api/attendance/student/{studentId}/class?semester={sem}
      */
     @GetMapping("/student/{studentId}/class")
-    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<List<AttendanceRecordResponse>>> getStudentClassAttendance(
             @PathVariable Long studentId,
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<AttendanceRecordResponse> response = attendanceService.getStudentClassAttendance(studentId, userDetails.getUsername());
+        List<AttendanceRecordResponse> response = attendanceService.getStudentClassAttendance(studentId, userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "Class attendance history fetched successfully"));
     }
 
     /**
      * Get CRT attendance history by student ID.
-     * GET /api/attendance/student/{studentId}/crt
+     * GET /api/attendance/student/{studentId}/crt?semester={sem}
      */
     @GetMapping("/student/{studentId}/crt")
-    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN')")
+    @PreAuthorize("hasAnyRole('STUDENT', 'FACULTY', 'HOD', 'OFFICER', 'PLACEMENT_OFFICER', 'ADMIN', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<List<AttendanceRecordResponse>>> getStudentCRTAttendance(
             @PathVariable Long studentId,
+            @RequestParam(required = false) Integer semester,
             @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<AttendanceRecordResponse> response = attendanceService.getStudentCRTAttendance(studentId, userDetails.getUsername());
+        List<AttendanceRecordResponse> response = attendanceService.getStudentCRTAttendance(studentId, userDetails.getUsername(), semester);
         return ResponseEntity.ok(ApiResponse.success(response, "CRT attendance history fetched successfully"));
     }
 }

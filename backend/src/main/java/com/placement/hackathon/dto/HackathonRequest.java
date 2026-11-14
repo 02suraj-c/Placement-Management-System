@@ -44,6 +44,9 @@ public class HackathonRequest {
     @Size(max = 500, message = "Eligibility criteria must not exceed 500 characters")
     private String eligibilityCriteria;
 
+    @Size(max = 100, message = "Target years must not exceed 100 characters")
+    private String targetYears;
+
     @Size(max = 255, message = "Registration URL must not exceed 255 characters")
     private String registrationUrl;
 

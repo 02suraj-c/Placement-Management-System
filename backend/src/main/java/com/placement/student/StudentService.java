@@ -7,6 +7,7 @@ import com.placement.student.dto.StudentUpdateRequest;
 import com.placement.user.User;
 import com.placement.user.UserRepository;
 import com.placement.user.UserRole;
+import com.placement.util.YearUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
@@ -46,6 +47,10 @@ public class StudentService {
 
         validateAcademicData(request.getCgpa(), request.getCurrentSemester(), request.getGraduationYear());
 
+        Integer calculatedYear = request.getAcademicYear() != null
+                ? request.getAcademicYear()
+                : YearUtils.calculateYearFromSemester(request.getCurrentSemester());
+
         Student student = Student.builder()
                 .user(user)
                 .rollNumber(request.getRollNumber().trim())
@@ -53,6 +58,7 @@ public class StudentService {
                 .department(request.getDepartment().trim())
                 .course(request.getCourse().trim())
                 .currentSemester(request.getCurrentSemester())
+                .academicYear(calculatedYear)
                 .cgpa(request.getCgpa())
                 .graduationYear(request.getGraduationYear())
                 .phoneNumber(request.getPhoneNumber() != null ? request.getPhoneNumber().trim() : null)
@@ -107,6 +113,16 @@ public class StudentService {
         if (request.getCurrentSemester() != null) {
             validateSemester(request.getCurrentSemester());
             student.setCurrentSemester(request.getCurrentSemester());
+            if (request.getAcademicYear() == null) {
+                student.setAcademicYear(YearUtils.calculateYearFromSemester(request.getCurrentSemester()));
+            }
+        }
+
+        if (request.getAcademicYear() != null) {
+            if (request.getAcademicYear() < 1 || request.getAcademicYear() > 4) {
+                throw new IllegalArgumentException("Academic year must be between 1 and 4");
+            }
+            student.setAcademicYear(request.getAcademicYear());
         }
 
         if (request.getGraduationYear() != null) {
@@ -190,6 +206,7 @@ public class StudentService {
                 .department(student.getDepartment())
                 .course(student.getCourse())
                 .currentSemester(student.getCurrentSemester())
+                .academicYear(student.getAcademicYear())
                 .cgpa(student.getCgpa())
                 .graduationYear(student.getGraduationYear())
                 .phoneNumber(student.getPhoneNumber())

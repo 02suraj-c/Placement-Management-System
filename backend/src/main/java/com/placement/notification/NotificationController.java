@@ -8,13 +8,12 @@ import com.placement.student.StudentRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/notifications")
@@ -37,7 +36,9 @@ public class NotificationController {
 
     @GetMapping("/student/{studentId}")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<List<SystemNotification>> getNotificationsByStudent(@PathVariable Long studentId) {
+    public ResponseEntity<List<SystemNotification>> getNotificationsByStudent(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse currentUser = authService.getCurrentUser();
         Student student = studentRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Student", "userId", currentUser.getId()));
@@ -52,7 +53,9 @@ public class NotificationController {
 
     @PutMapping("/{id}/read")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<SystemNotification> markAsRead(@PathVariable Long id) {
+    public ResponseEntity<SystemNotification> markAsRead(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse currentUser = authService.getCurrentUser();
         Student student = studentRepository.findByUserId(currentUser.getId())
                 .orElseThrow(() -> new ResourceNotFoundException("Student", "userId", currentUser.getId()));
@@ -66,5 +69,23 @@ public class NotificationController {
 
         SystemNotification updatedNotification = notificationService.markAsRead(id);
         return ResponseEntity.ok(updatedNotification);
+    }
+
+    @PutMapping("/student/{studentId}/read-all")
+    public ResponseEntity<Map<String, Object>> markAllAsRead(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        int count = notificationService.markAllAsRead(studentId, email);
+        return ResponseEntity.ok(Map.of("message", "All notifications marked as read", "count", count));
+    }
+
+    @GetMapping("/student/{studentId}/unread-count")
+    public ResponseEntity<Map<String, Object>> getUnreadCount(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        long count = notificationService.getUnreadCount(studentId, email);
+        return ResponseEntity.ok(Map.of("studentId", studentId, "unreadCount", count));
     }
 }

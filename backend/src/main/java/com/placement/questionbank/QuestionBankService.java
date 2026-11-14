@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * Business logic for the Question Bank.
- * Roles that may WRITE: TPO, DEPUTY_TPO, COORDINATOR, FACULTY.
+ * Roles that may WRITE: TPO, DEPUTY_TPO, COORDINATOR, FACULTY, OFFICER, ADMIN.
  * Role enforcement is done at the controller layer via @PreAuthorize.
  */
 @Service
@@ -41,7 +41,9 @@ public class QuestionBankService {
                 .difficulty(req.getDifficulty())
                 .questionType(req.getQuestionType())
                 .tags(req.getTags())
+                .targetYears(req.getTargetYears())
                 .yearAsked(req.getYearAsked())
+                .marks(req.getMarks() != null ? req.getMarks() : 10)
                 .source(req.getSource() != null ? req.getSource() : "MANUAL")
                 .createdBy(createdByUsername)
                 .build();
@@ -89,11 +91,14 @@ public class QuestionBankService {
         entity.setDifficulty(req.getDifficulty());
         entity.setQuestionType(req.getQuestionType());
         entity.setTags(req.getTags());
+        entity.setTargetYears(req.getTargetYears());
         entity.setYearAsked(req.getYearAsked());
+        if (req.getMarks() != null) {
+            entity.setMarks(req.getMarks());
+        }
         if (req.getSource() != null) {
             entity.setSource(req.getSource());
         }
-        // createdBy intentionally NOT updated
 
         return QuestionResponse.from(questionRepository.save(entity));
     }
@@ -107,7 +112,7 @@ public class QuestionBankService {
         questionRepository.delete(entity);
     }
 
-    // ── BULK SAVE (used by InterviewGenerator in Step 4) ─────────────────────
+    // ── BULK SAVE ─────────────────────────────────────────────────────────────
 
     @Transactional
     public List<QuestionResponse> saveAll(List<InterviewQuestion> questions) {

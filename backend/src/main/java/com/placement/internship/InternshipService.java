@@ -3,6 +3,7 @@ package com.placement.internship;
 import com.placement.exception.ResourceNotFoundException;
 import com.placement.internship.dto.InternshipRequest;
 import com.placement.internship.dto.InternshipResponse;
+import com.placement.util.YearUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -11,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class InternshipService {
 
     private final InternshipRepository internshipRepository;
@@ -40,6 +41,7 @@ public class InternshipService {
                 .stipend(request.getStipend() != null ? request.getStipend().trim() : null)
                 .duration(request.getDuration() != null ? request.getDuration().trim() : null)
                 .eligibilityCriteria(request.getEligibilityCriteria() != null ? request.getEligibilityCriteria().trim() : null)
+                .targetYears(request.getTargetYears())
                 .applicationDeadline(request.getApplicationDeadline())
                 .applicationUrl(request.getApplicationUrl() != null ? request.getApplicationUrl().trim() : null)
                 .active(request.getActive() != null ? request.getActive() : true)
@@ -60,6 +62,11 @@ public class InternshipService {
 
     @Transactional(readOnly = true)
     public List<InternshipResponse> getAllActiveInternships(String keyword, String location) {
+        return getAllActiveInternships(keyword, location, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<InternshipResponse> getAllActiveInternships(String keyword, String location, Integer year) {
         List<Internship> list;
 
         if (keyword != null && !keyword.isBlank()) {
@@ -71,6 +78,7 @@ public class InternshipService {
         }
 
         return list.stream()
+                .filter(i -> YearUtils.matchesYear(i.getTargetYears(), year))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -105,6 +113,7 @@ public class InternshipService {
         internship.setStipend(request.getStipend() != null ? request.getStipend().trim() : null);
         internship.setDuration(request.getDuration() != null ? request.getDuration().trim() : null);
         internship.setEligibilityCriteria(request.getEligibilityCriteria() != null ? request.getEligibilityCriteria().trim() : null);
+        internship.setTargetYears(request.getTargetYears());
         internship.setApplicationDeadline(request.getApplicationDeadline());
         internship.setApplicationUrl(request.getApplicationUrl() != null ? request.getApplicationUrl().trim() : null);
         if (request.getActive() != null) {
@@ -140,6 +149,7 @@ public class InternshipService {
                 .stipend(internship.getStipend())
                 .duration(internship.getDuration())
                 .eligibilityCriteria(internship.getEligibilityCriteria())
+                .targetYears(internship.getTargetYears())
                 .applicationDeadline(internship.getApplicationDeadline())
                 .applicationUrl(internship.getApplicationUrl())
                 .active(internship.isActive())

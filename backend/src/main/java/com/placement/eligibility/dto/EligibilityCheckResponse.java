@@ -10,9 +10,6 @@ import java.util.List;
 
 /**
  * Response DTO containing evaluation result and details of student eligibility for a placement drive.
- *
- * Package : com.placement.eligibility.dto
- * Owner   : Person 3
  */
 @Data
 @Builder
@@ -24,7 +21,12 @@ public class EligibilityCheckResponse {
     private Long studentId;
     private Long driveId;
     private boolean eligible;
+    private Boolean profileComplete;
     private List<String> reasons;
+
+    // Structured Smart "Why Not" breakdown
+    private WhyNotDetail whyNot;
+    private List<EligibilityCriterionResult> criteria;
 
     private Double studentCgpa;
     private Double minimumCgpa;

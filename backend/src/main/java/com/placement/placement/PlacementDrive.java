@@ -18,7 +18,6 @@ import java.util.Objects;
  * JPA Entity representing a recruitment/placement drive conducted by a company.
  *
  * Package  : com.placement.placement
- * Owner    : Person 3
  * Table    : placement_drive
  */
 @Entity
@@ -97,6 +96,14 @@ public class PlacementDrive {
     @Column(name = "eligible_branches", length = 500)
     private String eligibleBranches;
 
+    /**
+     * Target academic years (e.g. "3,4", "2,3", "1,2,3,4").
+     * When null or empty, open to all years.
+     */
+    @Size(max = 100, message = "Target years must not exceed 100 characters")
+    @Column(name = "target_years", length = 100)
+    private String targetYears;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -159,6 +166,18 @@ public class PlacementDrive {
         this.minimumCgpa = (minimumCgpa != null) ? minimumCgpa : 0.0;
         this.maximumAllowedBacklogs = (maximumAllowedBacklogs != null) ? maximumAllowedBacklogs : 0;
         this.eligibleBranches = eligibleBranches;
+    }
+
+    public PlacementDrive(Long id, Company company, String jobTitle, String jobDescription,
+                          String jobLocation, Double salaryPackage, String employmentType,
+                          LocalDate applicationStartDate, LocalDate applicationEndDate,
+                          LocalDate driveDate, Integer vacancies, DriveStatus status,
+                          Double minimumCgpa, Integer maximumAllowedBacklogs, String eligibleBranches,
+                          String targetYears, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this(id, company, jobTitle, jobDescription, jobLocation, salaryPackage, employmentType,
+                applicationStartDate, applicationEndDate, driveDate, vacancies, status,
+                minimumCgpa, maximumAllowedBacklogs, eligibleBranches, createdAt, updatedAt);
+        this.targetYears = targetYears;
     }
 
     public Long getId() {
@@ -297,6 +316,14 @@ public class PlacementDrive {
         this.eligibleBranches = eligibleBranches;
     }
 
+    public String getTargetYears() {
+        return targetYears;
+    }
+
+    public void setTargetYears(String targetYears) {
+        this.targetYears = targetYears;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -325,6 +352,7 @@ public class PlacementDrive {
                 ", minimumCgpa=" + minimumCgpa +
                 ", maximumAllowedBacklogs=" + maximumAllowedBacklogs +
                 ", eligibleBranches='" + eligibleBranches + '\'' +
+                ", targetYears='" + targetYears + '\'' +
                 '}';
     }
 }

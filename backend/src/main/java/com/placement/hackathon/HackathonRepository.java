@@ -10,6 +10,7 @@ import java.util.List;
 @Repository
 public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
 
+    // Existing query methods
     List<Hackathon> findByActiveTrueOrderByStartDateAsc();
 
     List<Hackathon> findByActiveTrueAndStatusOrderByStartDateAsc(HackathonStatus status);
@@ -17,6 +18,11 @@ public interface HackathonRepository extends JpaRepository<Hackathon, Long> {
     List<Hackathon> findAllByOrderByCreatedAtDesc();
 
     List<Hackathon> findByActiveTrueAndModeOrderByStartDateAsc(HackathonMode mode);
+
+    // New helper methods for fetching active hackathons by mode or status without ordering constraints
+    List<Hackathon> findActiveByMode(HackathonMode mode);
+
+    List<Hackathon> findActiveByStatus(HackathonStatus status);
 
     @Query("SELECT h FROM Hackathon h WHERE h.active = true AND (" +
             "LOWER(h.title) LIKE LOWER(CONCAT('%', :kw, '%')) OR " +

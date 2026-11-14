@@ -6,6 +6,7 @@ import com.placement.hackathon.dto.HackathonRequest;
 import com.placement.hackathon.dto.HackathonResponse;
 import com.placement.student.Student;
 import com.placement.student.StudentRepository;
+import com.placement.util.YearUtils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,9 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class HackathonService {
 
     private final HackathonRepository hackathonRepository;
@@ -44,6 +45,7 @@ public class HackathonService {
                 .mode(request.getMode())
                 .location(request.getLocation() != null ? request.getLocation().trim() : null)
                 .eligibilityCriteria(request.getEligibilityCriteria() != null ? request.getEligibilityCriteria().trim() : null)
+                .targetYears(request.getTargetYears())
                 .registrationUrl(request.getRegistrationUrl() != null ? request.getRegistrationUrl().trim() : null)
                 .status(request.getStatus() != null ? request.getStatus() : HackathonStatus.UPCOMING)
                 .active(request.getActive() != null ? request.getActive() : true)
@@ -64,19 +66,25 @@ public class HackathonService {
 
     @Transactional(readOnly = true)
     public List<HackathonResponse> getAllActiveHackathons(String keyword, HackathonMode mode, HackathonStatus status) {
+        return getAllActiveHackathons(keyword, mode, status, null);
+    }
+
+    @Transactional(readOnly = true)
+    public List<HackathonResponse> getAllActiveHackathons(String keyword, HackathonMode mode, HackathonStatus status, Integer year) {
         List<Hackathon> list;
 
         if (keyword != null && !keyword.isBlank()) {
             list = hackathonRepository.searchActiveHackathons(keyword.trim());
         } else if (mode != null) {
-            list = hackathonRepository.findByActiveTrueAndModeOrderByStartDateAsc(mode);
+            list = hackathonRepository.findActiveByMode(mode);
         } else if (status != null) {
-            list = hackathonRepository.findByActiveTrueAndStatusOrderByStartDateAsc(status);
+            list = hackathonRepository.findActiveByStatus(status);
         } else {
             list = hackathonRepository.findByActiveTrueOrderByStartDateAsc();
         }
 
         return list.stream()
+                .filter(h -> YearUtils.matchesYear(h.getTargetYears(), year))
                 .map(this::mapToResponse)
                 .toList();
     }
@@ -110,6 +118,7 @@ public class HackathonService {
         hackathon.setMode(request.getMode());
         hackathon.setLocation(request.getLocation() != null ? request.getLocation().trim() : null);
         hackathon.setEligibilityCriteria(request.getEligibilityCriteria() != null ? request.getEligibilityCriteria().trim() : null);
+        hackathon.setTargetYears(request.getTargetYears());
         hackathon.setRegistrationUrl(request.getRegistrationUrl() != null ? request.getRegistrationUrl().trim() : null);
         if (request.getStatus() != null) {
             hackathon.setStatus(request.getStatus());
@@ -129,35 +138,30 @@ public class HackathonService {
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", "id", id));
 
         log.info("Deleting hackathon ID: {} by user: {}", id, userEmail);
+        hackathonRegistrationRepository.deleteByHackathonId(id);
         hackathonRepository.delete(hackathon);
         log.info("Successfully deleted hackathon ID: {}", id);
     }
 
     @Transactional
-    public HackathonRegistrationResponse registerStudent(Long hackathonId, String userEmail) {
+    public HackathonRegistrationResponse registerStudent(Long hackathonId, String studentEmail) {
         Hackathon hackathon = hackathonRepository.findById(hackathonId)
                 .orElseThrow(() -> new ResourceNotFoundException("Hackathon", "id", hackathonId));
 
-        Student student = studentRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found for user: " + userEmail));
-
-        if (!hackathon.isActive()) {
-            throw new IllegalStateException("Hackathon listing is inactive");
+        if (!hackathon.isActive() || hackathon.getStatus() == HackathonStatus.COMPLETED || hackathon.getStatus() == HackathonStatus.CANCELLED) {
+            throw new IllegalStateException("Registrations are closed for this hackathon");
         }
 
-        if (hackathon.getStatus() == HackathonStatus.COMPLETED || hackathon.getStatus() == HackathonStatus.CANCELLED) {
-            throw new IllegalStateException("Registration is closed for this hackathon");
+        if (hackathon.getRegistrationDeadline() != null && LocalDate.now().isAfter(hackathon.getRegistrationDeadline())) {
+            throw new IllegalStateException("Registration deadline has passed for this hackathon");
         }
 
-        if (LocalDate.now().isAfter(hackathon.getRegistrationDeadline())) {
-            throw new IllegalStateException("Registration deadline has passed on " + hackathon.getRegistrationDeadline());
-        }
+        Student student = studentRepository.findByUserEmail(studentEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found for email: " + studentEmail));
 
-        if (hackathonRegistrationRepository.existsByHackathonIdAndStudentId(hackathon.getId(), student.getId())) {
-            throw new IllegalStateException("Student is already registered for this hackathon");
+        if (hackathonRegistrationRepository.existsByHackathonIdAndStudentId(hackathonId, student.getId())) {
+            throw new IllegalStateException("You are already registered for this hackathon");
         }
-
-        log.info("Registering student ID: {} for hackathon ID: {}", student.getId(), hackathon.getId());
 
         HackathonRegistration registration = HackathonRegistration.builder()
                 .hackathon(hackathon)
@@ -169,9 +173,9 @@ public class HackathonService {
     }
 
     @Transactional(readOnly = true)
-    public List<HackathonRegistrationResponse> getStudentRegistrations(String userEmail) {
-        Student student = studentRepository.findByUserEmail(userEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found for user: " + userEmail));
+    public List<HackathonRegistrationResponse> getStudentRegistrations(String studentEmail) {
+        Student student = studentRepository.findByUserEmail(studentEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("Student profile not found for email: " + studentEmail));
 
         return hackathonRegistrationRepository.findByStudentIdOrderByRegisteredAtDesc(student.getId()).stream()
                 .map(this::mapRegistrationToResponse)
@@ -184,7 +188,7 @@ public class HackathonService {
             throw new ResourceNotFoundException("Hackathon", "id", hackathonId);
         }
 
-        return hackathonRegistrationRepository.findByHackathonId(hackathonId).stream()
+        return hackathonRegistrationRepository.findByHackathonIdOrderByRegisteredAtDesc(hackathonId).stream()
                 .map(this::mapRegistrationToResponse)
                 .toList();
     }
@@ -226,6 +230,7 @@ public class HackathonService {
                 .mode(hackathon.getMode())
                 .location(hackathon.getLocation())
                 .eligibilityCriteria(hackathon.getEligibilityCriteria())
+                .targetYears(hackathon.getTargetYears())
                 .registrationUrl(hackathon.getRegistrationUrl())
                 .status(hackathon.getStatus())
                 .active(hackathon.isActive())

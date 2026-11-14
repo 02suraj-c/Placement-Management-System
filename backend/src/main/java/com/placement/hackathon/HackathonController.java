@@ -4,8 +4,15 @@ import com.placement.dto.ApiResponse;
 import com.placement.hackathon.dto.HackathonRegistrationResponse;
 import com.placement.hackathon.dto.HackathonRequest;
 import com.placement.hackathon.dto.HackathonResponse;
+import com.placement.student.Student;
+import com.placement.student.StudentRepository;
+import com.placement.user.User;
+import com.placement.user.UserRepository;
+import com.placement.user.UserRole;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,18 +28,32 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/api/hackathons")
-@RequiredArgsConstructor
 public class HackathonController {
 
     private final HackathonService hackathonService;
+    private final UserRepository userRepository;
+    private final StudentRepository studentRepository;
+
+    @Autowired
+    public HackathonController(HackathonService hackathonService,
+                               UserRepository userRepository,
+                               StudentRepository studentRepository) {
+        this.hackathonService = hackathonService;
+        this.userRepository = userRepository;
+        this.studentRepository = studentRepository;
+    }
+
+    public HackathonController(HackathonService hackathonService) {
+        this(hackathonService, null, null);
+    }
 
     /**
      * Create a new hackathon event.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
+     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY, TPO, DEPUTY_TPO, COORDINATOR.
      * POST /api/hackathons
      */
     @PostMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<HackathonResponse>> createHackathon(
             @Valid @RequestBody HackathonRequest request,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -44,26 +65,38 @@ public class HackathonController {
 
     /**
      * Get all active hackathons for students and staff.
-     * GET /api/hackathons?keyword=&mode=&status=
+     * If user is student, strictly filtered to their academic year!
+     * GET /api/hackathons?keyword=&mode=&status=&year=
      */
     @GetMapping
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<List<HackathonResponse>>> getActiveHackathons(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) HackathonMode mode,
-            @RequestParam(required = false) HackathonStatus status) {
+            @RequestParam(required = false) HackathonStatus status,
+            @RequestParam(required = false) Integer year,
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        List<HackathonResponse> response = hackathonService.getAllActiveHackathons(keyword, mode, status);
+        Integer effectiveYear = year;
+        if (userDetails != null && userDetails.getUsername() != null) {
+            String email = userDetails.getUsername();
+            User user = userRepository.findByEmail(email).orElse(null);
+            if (user != null && user.getRole() == UserRole.ROLE_STUDENT) {
+                Student student = studentRepository.findByUserEmail(email).orElse(null);
+                effectiveYear = (student != null) ? student.getAcademicYear() : 1;
+            }
+        }
+
+        List<HackathonResponse> response = hackathonService.getAllActiveHackathons(keyword, mode, status, effectiveYear);
         return ResponseEntity.ok(ApiResponse.success(response, "Active hackathons fetched successfully"));
     }
 
     /**
      * Get all hackathon listings (both active and inactive) for staff management.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * GET /api/hackathons/all
      */
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<List<HackathonResponse>>> getAllHackathons() {
         List<HackathonResponse> response = hackathonService.getAllHackathons();
         return ResponseEntity.ok(ApiResponse.success(response, "All hackathons fetched successfully"));
@@ -71,7 +104,6 @@ public class HackathonController {
 
     /**
      * Get a specific hackathon by ID.
-     * Accessible to all authenticated users.
      * GET /api/hackathons/{id}
      */
     @GetMapping("/{id}")
@@ -83,11 +115,10 @@ public class HackathonController {
 
     /**
      * Update an existing hackathon event.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * PUT /api/hackathons/{id}
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<HackathonResponse>> updateHackathon(
             @PathVariable Long id,
             @Valid @RequestBody HackathonRequest request,
@@ -100,11 +131,10 @@ public class HackathonController {
 
     /**
      * Delete an existing hackathon event.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * DELETE /api/hackathons/{id}
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO')")
     public ResponseEntity<ApiResponse<Void>> deleteHackathon(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -145,11 +175,10 @@ public class HackathonController {
 
     /**
      * Get attendee registration roster for a hackathon.
-     * Authorized: ADMIN, OFFICER, PLACEMENT_OFFICER, FACULTY, HOD, COMPANY.
      * GET /api/hackathons/{id}/registrations
      */
     @GetMapping("/{id}/registrations")
-    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER', 'FACULTY', 'HOD', 'COMPANY', 'TPO', 'DEPUTY_TPO', 'COORDINATOR')")
     public ResponseEntity<ApiResponse<List<HackathonRegistrationResponse>>> getHackathonRegistrations(
             @PathVariable Long id) {
 

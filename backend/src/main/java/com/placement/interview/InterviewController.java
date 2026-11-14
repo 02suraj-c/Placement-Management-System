@@ -14,12 +14,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -44,14 +41,18 @@ public class InterviewController {
 
     @PostMapping("/schedule")
     @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER')")
-    public ResponseEntity<InterviewRound> scheduleInterview(@RequestBody InterviewScheduleRequest request) {
+    public ResponseEntity<InterviewRound> scheduleInterview(
+            @RequestBody InterviewScheduleRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         InterviewRound round = interviewService.scheduleInterview(request);
         return new ResponseEntity<>(round, HttpStatus.CREATED);
     }
 
     @GetMapping("/application/{applicationId}")
     @PreAuthorize("hasAnyRole('STUDENT', 'ADMIN', 'OFFICER', 'PLACEMENT_OFFICER')")
-    public ResponseEntity<List<InterviewRound>> getInterviewsByApplication(@PathVariable Long applicationId) {
+    public ResponseEntity<List<InterviewRound>> getInterviewsByApplication(
+            @PathVariable Long applicationId,
+            @AuthenticationPrincipal UserDetails userDetails) {
         UserResponse currentUser = authService.getCurrentUser();
         if (currentUser != null && currentUser.getRole() == UserRole.ROLE_STUDENT) {
             Student student = studentRepository.findByUserId(currentUser.getId())
@@ -66,11 +67,30 @@ public class InterviewController {
         return ResponseEntity.ok(rounds);
     }
 
+    @GetMapping("/{roundId}")
+    public ResponseEntity<InterviewRound> getInterviewById(
+            @PathVariable Long roundId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        InterviewRound round = interviewService.getInterviewById(roundId, email);
+        return ResponseEntity.ok(round);
+    }
+
+    @GetMapping("/student/{studentId}")
+    public ResponseEntity<List<InterviewRound>> getInterviewsForStudent(
+            @PathVariable Long studentId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        List<InterviewRound> rounds = interviewService.getInterviewsForStudent(studentId, email);
+        return ResponseEntity.ok(rounds);
+    }
+
     @PostMapping("/{roundId}/result")
     @PreAuthorize("hasAnyRole('ADMIN', 'OFFICER', 'PLACEMENT_OFFICER')")
     public ResponseEntity<RoundResult> recordResult(
             @PathVariable Long roundId,
-            @RequestBody InterviewResultRequest request) {
+            @RequestBody InterviewResultRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
         RoundResult result = interviewService.recordResult(roundId, request);
         return new ResponseEntity<>(result, HttpStatus.CREATED);
     }

@@ -32,6 +32,12 @@ public class CRTAttendance {
     @Column(name = "session_name", nullable = false, length = 150)
     private String sessionName;
 
+    @Column(name = "academic_year")
+    private Integer academicYear;
+
+    @Column(name = "semester")
+    private Integer semester;
+
     @Column(name = "session_date", nullable = false)
     private LocalDate sessionDate;
 
@@ -53,5 +59,13 @@ public class CRTAttendance {
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
+        if (this.student != null) {
+            if (this.semester == null) {
+                this.semester = this.student.getCurrentSemester();
+            }
+            if (this.academicYear == null) {
+                this.academicYear = this.student.getAcademicYear();
+            }
+        }
     }
 }

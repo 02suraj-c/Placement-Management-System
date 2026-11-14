@@ -19,6 +19,8 @@ public class AttendanceSummaryResponse {
     private String studentName;
     private String rollNumber;
     private String department;
+    private Integer academicYear;
+    private Integer semester;
 
     // Class Attendance Metrics
     private long totalClassSessions;

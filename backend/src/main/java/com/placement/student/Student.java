@@ -1,6 +1,7 @@
 package com.placement.student;
 
 import com.placement.user.User;
+import com.placement.util.YearUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -38,6 +39,9 @@ public class Student {
     @Column(name = "current_semester", nullable = false)
     private Integer currentSemester;
 
+    @Column(name = "academic_year")
+    private Integer academicYear;
+
     @Column(name = "cgpa", nullable = false)
     private Double cgpa;
 
@@ -63,6 +67,13 @@ public class Student {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public Integer getAcademicYear() {
+        if (this.academicYear != null && this.academicYear >= 1 && this.academicYear <= 4) {
+            return this.academicYear;
+        }
+        return YearUtils.calculateYearFromSemester(this.currentSemester);
+    }
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -70,10 +81,16 @@ public class Student {
         if (this.activeBacklogs == null) {
             this.activeBacklogs = 0;
         }
+        if (this.academicYear == null && this.currentSemester != null) {
+            this.academicYear = YearUtils.calculateYearFromSemester(this.currentSemester);
+        }
     }
 
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+        if (this.academicYear == null && this.currentSemester != null) {
+            this.academicYear = YearUtils.calculateYearFromSemester(this.currentSemester);
+        }
     }
 }

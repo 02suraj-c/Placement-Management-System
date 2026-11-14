@@ -29,4 +29,18 @@ public class RegisterRequest {
 
     @NotNull(message = "Role is required")
     private UserRole role;
+
+    // Optional comprehensive student registration fields
+    private String rollNumber;
+    private String enrollmentNumber;
+    private String department;
+    private String course;
+    private String studentYear;
+    private Integer currentSemester;
+    private Integer graduationYear;
+    private String phoneNumber;
+    private String address;
+    private Double cgpa;
+    private Integer activeBacklogs;
+    private String skills;
 }
